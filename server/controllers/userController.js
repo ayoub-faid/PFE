@@ -5,13 +5,13 @@ const getAllUsers = async (req, res) => {
   try {
     const { role } = req.query;
     let query = {};
-    
+
     if (role && ['client', 'admin', 'delivery'].includes(role)) {
       query.role = role;
     }
 
     const users = await User.find(query).select('-password').sort({ createdAt: -1 });
-    
+
     return res.status(200).json({
       message: 'Users retrieved successfully',
       data: users,
@@ -27,7 +27,7 @@ const getUserById = async (req, res) => {
   try {
     const { id } = req.params;
     const user = await User.findById(id).select('-password');
-    
+
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }

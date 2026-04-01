@@ -4,7 +4,7 @@ const Category = require('../models/Category');
 const createProduct = async (req, res) => {
   try {
     const { name, description, category, price, costPrice, sku } = req.body;
-    
+
     if (!name || !price || !category) {
       return res.status(400).json({ message: 'Name, price, and category are required' });
     }
@@ -104,7 +104,7 @@ const getProduct = async (req, res) => {
 const updateProduct = async (req, res) => {
   try {
     const { name, description, category, price, costPrice, sku, active } = req.body;
-    
+
     const product = await Product.findById(req.params.id);
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
