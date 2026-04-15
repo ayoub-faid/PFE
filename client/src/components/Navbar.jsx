@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
+import { ShoppingCart, Menu, X } from 'lucide-react';
 
-const activeClass = 'text-white bg-blue-600 rounded-md px-3 py-2';
-const normalClass = 'text-gray-300 hover:text-white px-3 py-2 rounded-md';
+const activeClass = 'text-[#3E2723] bg-[#FFD54F] rounded-md px-3 py-2 font-semibold';
+const normalClass = 'text-[#FFF3E0] hover:text-white hover:bg-[#5D4037] px-3 py-2 rounded-md transition';
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { isAuthenticated, user, logout } = useAuth();
+  const { totalItems } = useCart();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -18,29 +21,37 @@ export default function Navbar() {
   const roleLabel = user ? user.role.toUpperCase() : null;
 
   return (
-    <nav className="bg-slate-900 text-slate-100 shadow-lg sticky top-0 z-50">
+    <nav className="bg-[#3E2723] text-[#FFF3E0] shadow-lg sticky top-0 z-50 border-b border-[#FFD54F]/20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <NavLink to="/" className="flex items-center gap-3 hover:opacity-90">
-            <div className="bg-blue-600 p-2 rounded-lg shadow-md">
-              <span className="text-white font-bold text-xl">G</span>
+          {/* Logo */}
+          <NavLink to="/" className="flex items-center gap-3 hover:opacity-90 flex-shrink-0">
+            <div className="bg-[#FFD54F] p-2 rounded-lg shadow-md shadow-[#00000033]">
+              <span className="text-[#3E2723] font-bold text-xl">G</span>
             </div>
             <div>
-              <span className="text-white font-bold text-xl tracking-tight">Gros Products</span>
-              <p className="text-xs text-slate-400">Grossiste alimentaire Maroc</p>
+              <span className="text-[#FFD54F] font-bold text-xl tracking-tight">Gros Products</span>
+              <p className="text-xs text-[#FFF3E0]/80">Grossiste alimentaire Maroc</p>
             </div>
           </NavLink>
 
+          {/* Center Navigation - Hidden on mobile */}
           <div className="hidden md:flex md:items-center md:space-x-2">
             <NavLink to="/" className={({ isActive }) => (isActive ? activeClass : normalClass)}>
-              Home
+              Accueil
+            </NavLink>
+            <NavLink to="/products" className={({ isActive }) => (isActive ? activeClass : normalClass)}>
+              Produits
+            </NavLink>
+            <NavLink to="/categories" className={({ isActive }) => (isActive ? activeClass : normalClass)}>
+              Catégories
             </NavLink>
             {isAuthenticated && user?.role === 'admin' && (
               <NavLink
                 to="/admin"
                 className={({ isActive }) => (isActive ? activeClass : normalClass)}
               >
-                Admin Panel
+                Admin
               </NavLink>
             )}
             {isAuthenticated && user?.role === 'delivery' && (
@@ -48,7 +59,7 @@ export default function Navbar() {
                 to="/delivery"
                 className={({ isActive }) => (isActive ? activeClass : normalClass)}
               >
-                Delivery Panel
+                Livraisons
               </NavLink>
             )}
             {isAuthenticated && user?.role === 'client' && (
@@ -56,45 +67,60 @@ export default function Navbar() {
                 to="/dashboard"
                 className={({ isActive }) => (isActive ? activeClass : normalClass)}
               >
-                My Products
+                Tableau de bord
               </NavLink>
             )}
           </div>
 
-          <div className="hidden md:flex items-center gap-2">
+          {/* Right side - Cart and Auth - stays on right */}
+          <div className="hidden md:flex md:items-center md:space-x-3 md:ml-auto">
+            {/* Cart Icon */}
+            <NavLink
+              to="/cart"
+              className="relative p-2 text-[#FFF3E0] hover:text-white rounded-md"
+            >
+              <ShoppingCart className="h-5 w-5" />
+              {totalItems > 0 && (
+                <span className="absolute -top-1 -right-1 bg-[#FFC107] text-[#3E2723] text-xs rounded-full h-5 w-5 flex items-center justify-center shadow-md">
+                  {totalItems > 99 ? '99+' : totalItems}
+                </span>
+              )}
+            </NavLink>
+
             {!isAuthenticated ? (
               <>
                 <NavLink
                   to="/login"
                   className={({ isActive }) => (isActive ? activeClass : normalClass)}
                 >
-                  Login
+                  Connexion
                 </NavLink>
                 <NavLink
                   to="/register"
                   className={({ isActive }) => (isActive ? activeClass : normalClass)}
                 >
-                  Register
+                  Inscription
                 </NavLink>
               </>
             ) : (
               <>
-                <span className="px-3 py-2 bg-slate-800 border border-slate-700 rounded-md text-sm text-slate-300">
+                <span className="px-3 py-2 bg-[#5D4037] border border-[#FFD54F]/25 rounded-md text-sm text-[#FFF3E0]">
                   {roleLabel}
                 </span>
                 <button
                   onClick={handleLogout}
-                  className="px-3 py-2 bg-red-600 hover:bg-red-700 rounded-md text-white text-sm"
+                  className="px-3 py-2 bg-[#FFD54F] hover:bg-[#FFC107] rounded-md text-[#3E2723] text-sm font-semibold"
                 >
-                  Logout
+                  Déconnexion
                 </button>
               </>
             )}
           </div>
 
+          {/* Mobile menu button */}
           <button
             type="button"
-            className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-slate-300 hover:text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+            className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-[#FFF3E0] hover:text-white hover:bg-[#5D4037] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#FFC107]"
             onClick={() => setMenuOpen(!menuOpen)}
             aria-controls="mobile-menu"
             aria-expanded={menuOpen}
@@ -121,7 +147,29 @@ export default function Navbar() {
               onClick={() => setMenuOpen(false)}
               className={({ isActive }) => (isActive ? activeClass : normalClass)}
             >
-              Home
+              Accueil
+            </NavLink>
+            <NavLink
+              to="/products"
+              onClick={() => setMenuOpen(false)}
+              className={({ isActive }) => (isActive ? activeClass : normalClass)}
+            >
+              Produits
+            </NavLink>
+            <NavLink
+              to="/categories"
+              onClick={() => setMenuOpen(false)}
+              className={({ isActive }) => (isActive ? activeClass : normalClass)}
+            >
+              Catégories
+            </NavLink>
+            <NavLink
+              to="/cart"
+              onClick={() => setMenuOpen(false)}
+              className={({ isActive }) => (isActive ? activeClass : normalClass) + ' flex items-center gap-2'}
+            >
+              <ShoppingCart className="h-4 w-4" />
+              Panier {totalItems > 0 && `(${totalItems})`}
             </NavLink>
             {isAuthenticated && user?.role === 'admin' && (
               <NavLink
@@ -157,14 +205,14 @@ export default function Navbar() {
                   onClick={() => setMenuOpen(false)}
                   className={({ isActive }) => (isActive ? activeClass : normalClass)}
                 >
-                  Login
+                  Connexion
                 </NavLink>
                 <NavLink
                   to="/register"
                   onClick={() => setMenuOpen(false)}
                   className={({ isActive }) => (isActive ? activeClass : normalClass)}
                 >
-                  Register
+                  Inscription
                 </NavLink>
               </>
             ) : (

@@ -26,24 +26,27 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Login to Gros Products
+    <div className="min-h-screen flex items-center justify-center bg-[#3E2723] py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8 bg-[#FFF3E0]/95 ring-1 ring-[#FFD54F]/30 rounded-[2rem] p-8 shadow-[0_30px_60px_rgba(0,0,0,0.18)]">
+        <div className="text-center">
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-[#3E2723]">
+            Connexion à Gros Products
           </h2>
+          <p className="mt-2 text-sm text-[#5A3F31]/90">
+            Accédez à votre espace grossiste pour gérer vos commandes et vos stocks.
+          </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
-            <div className="rounded-md bg-red-50 p-4">
-              <p className="text-sm text-red-700">{error}</p>
+            <div className="rounded-2xl bg-[#FFD54F]/15 border border-[#FFC107]/40 p-4">
+              <p className="text-sm text-[#3E2723]">{error}</p>
             </div>
           )}
 
-          <div className="rounded-md shadow-sm -space-y-px">
-            <div>
-              <label htmlFor="email" className="sr-only">
-                Email address
+          <div className="rounded-[1.5rem] shadow-sm overflow-hidden ring-1 ring-[#3E2723]/10">
+            <div className="bg-white/90 px-4 py-3">
+              <label htmlFor="email" className="block text-sm font-medium text-[#5A3F31]">
+                Adresse email
               </label>
               <input
                 id="email"
@@ -51,15 +54,15 @@ export default function Login() {
                 type="email"
                 autoComplete="email"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Email address"
+                className="mt-1 block w-full rounded-2xl border border-[#D7CCC8] bg-[#FFF3E0] px-3 py-2 text-[#3E2723] shadow-sm focus:border-[#FFC107] focus:ring-[#FFC107]/60 sm:text-sm"
+                placeholder="votre email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
-            <div>
-              <label htmlFor="password" className="sr-only">
-                Password
+            <div className="bg-white/90 px-4 py-3">
+              <label htmlFor="password" className="block text-sm font-medium text-[#5A3F31]">
+                Mot de passe
               </label>
               <input
                 id="password"
@@ -67,8 +70,8 @@ export default function Login() {
                 type="password"
                 autoComplete="current-password"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Password"
+                className="mt-1 block w-full rounded-2xl border border-[#D7CCC8] bg-[#FFF3E0] px-3 py-2 text-[#3E2723] shadow-sm focus:border-[#FFC107] focus:ring-[#FFC107]/60 sm:text-sm"
+                placeholder="mot de passe"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
@@ -79,17 +82,17 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+              className="group relative w-full flex justify-center py-3 px-4 rounded-3xl bg-[#FFD54F] text-[#3E2723] text-sm font-semibold shadow-lg shadow-[#00000020] transition hover:bg-[#FFC107] disabled:opacity-60"
             >
-              {loading ? 'Logging in...' : 'Login'}
+              {loading ? 'Connexion en cours...' : 'Se connecter'}
             </button>
           </div>
 
           <div className="text-center">
-            <p className="text-sm text-gray-600">
-              Don't have an account?{' '}
-              <Link to="/register" className="font-medium text-blue-600 hover:text-blue-500">
-                Register here
+            <p className="text-sm text-[#5A3F31]/80">
+              Pas encore de compte ?{' '}
+              <Link to="/register" className="font-semibold text-[#3E2723] hover:text-[#000]">
+                Créez-en un
               </Link>
             </p>
           </div>

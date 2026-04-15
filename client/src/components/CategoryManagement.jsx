@@ -151,7 +151,7 @@ export default function CategoryManagement() {
                 <div className="flex gap-2">
                   <button
                     onClick={() => handleEdit(category)}
-                    className="flex-1 text-blue-600 hover:text-blue-900 text-sm font-medium py-2 hover:bg-blue-50 rounded transition flex items-center justify-center gap-1"
+                    className="flex-1 text-red-600 hover:text-red-900 text-sm font-medium py-2 hover:bg-red-50 rounded transition flex items-center justify-center gap-1"
                   >
                     <Edit2 className="w-4 h-4" /> Edit
                   </button>

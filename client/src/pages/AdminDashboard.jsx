@@ -46,23 +46,23 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-900">
       {/* Navbar */}
-      <nav className="bg-blue-600 text-white shadow-lg">
+      <nav className="bg-gray-900 text-white border-b border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
             <div>
-              <h1 className="text-2xl font-bold">Gros Products</h1>
-              <p className="text-blue-100 text-sm">Admin Dashboard</p>
+              <h1 className="text-2xl font-bold text-red-500">Gros Products</h1>
+              <p className="text-red-300 text-sm">Admin Dashboard</p>
             </div>
             <div className="flex items-center space-x-4">
               <div className="text-right">
-                <p className="text-sm">{user?.name}</p>
-                <p className="text-xs text-blue-100">{user?.role}</p>
+                <p className="text-sm text-gray-300">{user?.name}</p>
+                <p className="text-xs text-red-300">{user?.role}</p>
               </div>
               <button
                 onClick={handleLogout}
-                className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-md text-sm font-medium transition"
+                className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-md text-sm font-medium transition"
               >
                 Logout
               </button>
@@ -75,7 +75,7 @@ export default function AdminDashboard() {
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         {/* Tab Navigation */}
         <div className="mb-6">
-          <div className="bg-white rounded-lg shadow-md overflow-hidden">
+          <div className="bg-gray-800 rounded-lg shadow-md overflow-hidden border border-gray-700">
             <div className="flex gap-0">
               {tabs.map(tab => {
                 const Icon = tab.icon;
@@ -86,8 +86,8 @@ export default function AdminDashboard() {
                     onClick={() => setActiveTab(tab.id)}
                     className={`flex-1 px-4 py-4 flex items-center justify-center gap-2 font-medium transition border-b-2 ${
                       isActive
-                        ? 'bg-blue-50 text-blue-600 border-blue-600'
-                        : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
+                        ? 'bg-red-900/20 text-red-400 border-red-500'
+                        : 'bg-gray-800 text-gray-400 border-gray-600 hover:bg-gray-700'
                     }`}
                   >
                     <Icon className="w-5 h-5" />

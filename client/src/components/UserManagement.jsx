@@ -149,7 +149,7 @@ export default function UserManagement() {
               onClick={() => setSelectedRole('all')}
               className={`px-4 py-2 rounded-md text-sm font-medium transition ${
                 selectedRole === 'all'
-                  ? 'bg-blue-600 text-white'
+                  ? 'bg-red-600 text-white'
                   : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
               }`}
             >
@@ -191,7 +191,7 @@ export default function UserManagement() {
         {/* Loading State */}
         {loading && (
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
           </div>
         )}
 
@@ -239,7 +239,7 @@ export default function UserManagement() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                       <button
                         onClick={() => handleEditRole(u)}
-                        className="text-blue-600 hover:text-blue-900 mr-4 inline-flex items-center gap-1 font-medium"
+                        className="text-red-600 hover:text-red-900 mr-4 inline-flex items-center gap-1 font-medium"
                       >
                         <Edit2 className="w-4 h-4" /> Edit
                       </button>
@@ -299,7 +299,7 @@ export default function UserManagement() {
               </button>
               <button
                 onClick={handleSaveRole}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition font-medium"
+                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition font-medium"
               >
                 Save Changes
               </button>

@@ -50,97 +50,102 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Register for Gros Products
+    <div className="min-h-screen flex items-center justify-center bg-[#3E2723] py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8 bg-[#FFF3E0]/95 ring-1 ring-[#FFD54F]/30 rounded-[2rem] p-8 shadow-[0_30px_60px_rgba(0,0,0,0.18)]">
+        <div className="text-center">
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-[#3E2723]">
+            Inscription à Gros Products
           </h2>
+          <p className="mt-2 text-sm text-[#5A3F31]/90">
+            Créez votre compte grossiste pour commander en gros et suivre vos livraisons.
+          </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
-            <div className="rounded-md bg-red-50 p-4">
-              <p className="text-sm text-red-700">{error}</p>
+            <div className="rounded-2xl bg-[#FFD54F]/15 border border-[#FFC107]/40 p-4">
+              <p className="text-sm text-[#3E2723]">{error}</p>
             </div>
           )}
 
           <div className="space-y-4">
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                Full Name
+            <div className="bg-white/90 rounded-2xl px-4 py-4 shadow-sm ring-1 ring-[#3E2723]/10">
+              <label htmlFor="name" className="block text-sm font-medium text-[#5A3F31]">
+                Nom complet
               </label>
               <input
                 id="name"
                 name="name"
                 type="text"
                 required
-                className="mt-1 appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                placeholder="Enter your full name"
+                className="mt-1 block w-full rounded-2xl border border-[#D7CCC8] bg-[#FFF3E0] px-3 py-2 text-[#3E2723] focus:border-[#FFC107] focus:ring-[#FFC107]/60 sm:text-sm"
+                placeholder="Votre nom complet"
                 value={formData.name}
                 onChange={handleChange}
               />
             </div>
 
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email address
+            <div className="bg-white/90 rounded-2xl px-4 py-4 shadow-sm ring-1 ring-[#3E2723]/10">
+              <label htmlFor="email" className="block text-sm font-medium text-[#5A3F31]">
+                Adresse email
               </label>
               <input
                 id="email"
                 name="email"
                 type="email"
                 required
-                className="mt-1 appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                placeholder="Enter your email"
+                className="mt-1 block w-full rounded-2xl border border-[#D7CCC8] bg-[#FFF3E0] px-3 py-2 text-[#3E2723] focus:border-[#FFC107] focus:ring-[#FFC107]/60 sm:text-sm"
+                placeholder="Votre adresse email"
                 value={formData.email}
                 onChange={handleChange}
               />
             </div>
 
-            <div>
-              <label htmlFor="role" className="block text-sm font-medium text-gray-700">
-                Role
+            <div className="bg-white/90 rounded-2xl px-4 py-4 shadow-sm ring-1 ring-[#3E2723]/10">
+              <label htmlFor="role" className="block text-sm font-medium text-[#5A3F31]">
+                Rôle
               </label>
               <select
                 id="role"
                 name="role"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-gray-100 text-gray-600 cursor-not-allowed"
+                className="mt-1 block w-full rounded-2xl border border-[#D7CCC8] bg-[#FFF3E0] px-3 py-2 text-[#3E2723] focus:border-[#FFC107] focus:ring-[#FFC107]/60 sm:text-sm cursor-not-allowed"
                 value={formData.role}
                 onChange={handleChange}
                 disabled
               >
-                <option value="client">Client (Default)</option>
+                <option value="client">Client (par défaut)</option>
               </select>
-              <p className="mt-1 text-xs text-gray-500">Admin and Delivery roles are assigned by administrators only</p>
+              <p className="mt-1 text-xs text-[#5A3F31]/70">
+                Les rôles administrateur et livreur sont attribués par l'administrateur après validation.
+              </p>
             </div>
 
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Password
+            <div className="bg-white/90 rounded-2xl px-4 py-4 shadow-sm ring-1 ring-[#3E2723]/10">
+              <label htmlFor="password" className="block text-sm font-medium text-[#5A3F31]">
+                Mot de passe
               </label>
               <input
                 id="password"
                 name="password"
                 type="password"
                 required
-                className="mt-1 appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                placeholder="Enter password (min 6 characters)"
+                className="mt-1 block w-full rounded-2xl border border-[#D7CCC8] bg-[#FFF3E0] px-3 py-2 text-[#3E2723] focus:border-[#FFC107] focus:ring-[#FFC107]/60 sm:text-sm"
+                placeholder="Mot de passe (min 6 caractères)"
                 value={formData.password}
                 onChange={handleChange}
               />
             </div>
 
-            <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-                Confirm Password
+            <div className="bg-white/90 rounded-2xl px-4 py-4 shadow-sm ring-1 ring-[#3E2723]/10">
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-[#5A3F31]">
+                Confirmer le mot de passe
               </label>
               <input
                 id="confirmPassword"
                 name="confirmPassword"
                 type="password"
                 required
-                className="mt-1 appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                placeholder="Confirm password"
+                className="mt-1 block w-full rounded-2xl border border-[#D7CCC8] bg-[#FFF3E0] px-3 py-2 text-[#3E2723] focus:border-[#FFC107] focus:ring-[#FFC107]/60 sm:text-sm"
+                placeholder="Confirmez le mot de passe"
                 value={formData.confirmPassword}
                 onChange={handleChange}
               />
@@ -151,17 +156,17 @@ export default function Register() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+              className="w-full flex justify-center py-3 px-4 rounded-3xl bg-[#FFD54F] text-[#3E2723] text-sm font-semibold shadow-lg shadow-[#00000020] transition hover:bg-[#FFC107] disabled:opacity-60"
             >
-              {loading ? 'Registering...' : 'Register'}
+              {loading ? 'Enregistrement...' : 'Créer un compte'}
             </button>
           </div>
 
           <div className="text-center">
-            <p className="text-sm text-gray-600">
-              Already have an account?{' '}
-              <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500">
-                Login here
+            <p className="text-sm text-[#5A3F31]/80">
+              Vous avez déjà un compte ?{' '}
+              <Link to="/login" className="font-semibold text-[#3E2723] hover:text-[#000]">
+                Connectez-vous
               </Link>
             </p>
           </div>

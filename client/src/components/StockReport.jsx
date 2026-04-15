@@ -197,7 +197,7 @@ export default function StockReport() {
                 <td colSpan="3" className="px-6 py-3 text-right text-gray-900">
                   {reportData?.totals?.totalItems} units
                 </td>
-                <td className="px-6 py-3 text-right text-blue-600 font-bold">
+                <td className="px-6 py-3 text-right text-red-600 font-bold">
                   ${reportData?.totals?.totalValue?.toFixed(2)}
                 </td>
                 <td className="px-6 py-3"></td>

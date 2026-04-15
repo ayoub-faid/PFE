@@ -13,6 +13,8 @@ export default function ProductManagement() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
   const [showStockModal, setShowStockModal] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [categorySearch, setCategorySearch] = useState('');
+  const [showAdvancedFields, setShowAdvancedFields] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -109,6 +111,8 @@ export default function ProductManagement() {
 
   const handleEdit = (product) => {
     setEditingProduct(product);
+    setCategorySearch('');
+    setShowAdvancedFields(false);
     setFormData({
       name: product.name,
       description: product.description,
@@ -146,6 +150,8 @@ export default function ProductManagement() {
 
   const handleAddNew = () => {
     setEditingProduct(null);
+    setCategorySearch('');
+    setShowAdvancedFields(false);
     setFormData({
       name: '',
       description: '',
@@ -172,6 +178,10 @@ export default function ProductManagement() {
     ? products
     : products.filter(p => p.category._id === selectedCategory);
 
+  const filteredCategories = categories.filter(cat =>
+    cat.name.toLowerCase().includes(categorySearch.toLowerCase())
+  );
+
   return (
     <div className="space-y-4">
       {/* Header */}
@@ -179,7 +189,7 @@ export default function ProductManagement() {
         <h3 className="text-xl font-bold text-gray-900">Product Management</h3>
         <button
           onClick={handleAddNew}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center gap-2 transition font-medium"
+          className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md flex items-center gap-2 transition font-medium"
         >
           <Plus className="w-4 h-4" /> Add Product
         </button>
@@ -190,7 +200,7 @@ export default function ProductManagement() {
         <select
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none"
+          className="px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 outline-none"
         >
           <option value="all">All Categories</option>
           {categories.map(cat => (
@@ -202,7 +212,7 @@ export default function ProductManagement() {
       {/* Loading State */}
       {loading && (
         <div className="flex items-center justify-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
         </div>
       )}
 
@@ -221,7 +231,6 @@ export default function ProductManagement() {
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">SKU</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stock</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
@@ -245,9 +254,6 @@ export default function ProductManagement() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                     {product.category?.name}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-600">
-                    {product.sku || '-'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
                     ${product.price.toFixed(2)}
@@ -280,7 +286,7 @@ export default function ProductManagement() {
                     </button>
                     <button
                       onClick={() => handleEdit(product)}
-                      className="text-blue-600 hover:text-blue-900 font-medium"
+                      className="text-red-600 hover:text-red-900 font-medium"
                     >
                       Edit
                     </button>
@@ -305,7 +311,7 @@ export default function ProductManagement() {
           <p className="text-gray-600 mb-4">No products yet</p>
           <button
             onClick={handleAddNew}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition font-medium"
+            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md transition font-medium"
           >
             Create First Product
           </button>
@@ -332,13 +338,20 @@ export default function ProductManagement() {
                     value={formData.name}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 outline-none"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Category *
                   </label>
+                  <input
+                    type="text"
+                    value={categorySearch}
+                    onChange={(e) => setCategorySearch(e.target.value)}
+                    placeholder="Search categories..."
+                    className="w-full mb-2 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none"
+                  />
                   <select
                     name="category"
                     value={formData.category}
@@ -347,7 +360,7 @@ export default function ProductManagement() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none"
                   >
                     <option value="">Select Category</option>
-                    {categories.map(cat => (
+                    {filteredCategories.map(cat => (
                       <option key={cat._id} value={cat._id}>{cat.name}</option>
                     ))}
                   </select>
@@ -399,31 +412,46 @@ export default function ProductManagement() {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  SKU
-                </label>
-                <input
-                  type="text"
-                  name="sku"
-                  value={formData.sku}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none"
-                />
+              <div className="flex items-center justify-between">
+                <h4 className="text-sm font-medium text-gray-700">More options</h4>
+                <button
+                  type="button"
+                  onClick={() => setShowAdvancedFields(prev => !prev)}
+                  className="text-sm text-red-600 hover:text-red-800"
+                >
+                  {showAdvancedFields ? 'Hide advanced fields' : 'Show advanced fields'}
+                </button>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Product Image
-                </label>
-                <input
-                  type="file"
-                  name="image"
-                  onChange={handleInputChange}
-                  accept="image/*"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none"
-                />
-              </div>
+              {showAdvancedFields && (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      SKU
+                    </label>
+                    <input
+                      type="text"
+                      name="sku"
+                      value={formData.sku}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Product Image
+                    </label>
+                    <input
+                      type="file"
+                      name="image"
+                      onChange={handleInputChange}
+                      accept="image/*"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none"
+                    />
+                  </div>
+                </div>
+              )}
 
               <div className="flex items-center">
                 <input
@@ -432,7 +460,7 @@ export default function ProductManagement() {
                   name="active"
                   checked={formData.active}
                   onChange={handleInputChange}
-                  className="h-4 w-4 rounded border-gray-300 text-blue-600"
+                  className="h-4 w-4 rounded border-gray-300 text-red-600"
                 />
                 <label htmlFor="active" className="ml-2 text-sm text-gray-700">
                   Active
@@ -449,7 +477,7 @@ export default function ProductManagement() {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition font-medium"
+                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition font-medium"
                 >
                   {editingProduct ? 'Update' : 'Create'}
                 </button>
@@ -508,7 +536,7 @@ export default function ProductManagement() {
                 />
               </div>
 
-              <div className="bg-blue-50 p-3 rounded">
+              <div className="bg-red-50 p-3 rounded">
                 <p className="text-sm text-blue-900">
                   <span className="font-semibold">Total Stock: </span>
                   {stockData.available + stockData.reserved + stockData.damaged}
