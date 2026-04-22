@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ShoppingCart, Plus, Minus, Trash2, ArrowLeft, CreditCard, Package } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import orderService from '../services/orderService';
+
+const PAYMENT_METHOD = 'Cash on Delivery';
+const WHATSAPP_NUMBER = '+212696630684';
+const WHATSAPP_LINK = 'https://wa.me/212696630684';
 
 const getImageUrl = (image) => {
   if (!image) return null;
@@ -13,10 +16,6 @@ const getImageUrl = (image) => {
 
 export default function Cart() {
   const { cartItems, totalItems, totalPrice, updateQuantity, removeFromCart, clearCart } = useCart();
-  const [showCheckout, setShowCheckout] = useState(false);
-  const [checkoutPhone, setCheckoutPhone] = useState('');
-  const [checkoutLoading, setCheckoutLoading] = useState(false);
-  const [checkoutMessage, setCheckoutMessage] = useState('');
 
   const handleQuantityChange = (productId, newQuantity) => {
     updateQuantity(productId, newQuantity);
@@ -31,37 +30,27 @@ export default function Cart() {
   const handleClearCart = () => {
     if (window.confirm('Are you sure you want to clear your entire cart?')) {
       clearCart();
-      setShowCheckout(false);
-      setCheckoutPhone('');
-      setCheckoutMessage('');
     }
   };
 
-  const handleCheckout = async () => {
-    if (!checkoutPhone.trim()) {
-      alert('Please enter a phone number to complete your order.');
-      return;
-    }
+  const handleCheckout = () => {
+    const orderLines = cartItems.map((item, index) => {
+      const lineTotal = (item.price * item.quantity).toFixed(2);
+      return `${index + 1}. ${item.name} x${item.quantity} = $${lineTotal}`;
+    });
 
-    try {
-      setCheckoutLoading(true);
-      const orderData = {
-        cartItems,
-        total: Number((totalPrice * 1.1).toFixed(2)),
-        phone: checkoutPhone.trim()
-      };
+    const message = [
+      'Hello, I want to place an order:',
+      '',
+      ...orderLines,
+      '',
+      `Total items: ${totalItems}`,
+      `Total amount: $${(totalPrice * 1.1).toFixed(2)}`,
+      `Payment method: ${PAYMENT_METHOD}`
+    ].join('\n');
 
-      const response = await orderService.checkoutOrder(orderData);
-      setCheckoutMessage(response.data.message || 'Order sent successfully.');
-      clearCart();
-      setShowCheckout(false);
-      setCheckoutPhone('');
-    } catch (error) {
-      console.error('Checkout error:', error);
-      alert(error.response?.data?.message || 'Failed to send order.');
-    } finally {
-      setCheckoutLoading(false);
-    }
+    const whatsappUrl = `${WHATSAPP_LINK}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
   };
 
   if (cartItems.length === 0) {
@@ -219,6 +208,23 @@ export default function Cart() {
               <h2 className="text-lg font-semibold text-[#3E2723] mb-6">Résumé de la commande</h2>
 
               <div className="space-y-4">
+                <div className="rounded-lg border border-[#FFD54F]/30 bg-[#FFF8D9] p-4">
+                  <p className="text-sm font-medium text-[#3E2723]">
+                    Mode de paiement: <span className="text-[#FFC107]">{PAYMENT_METHOD}</span>
+                  </p>
+                  <p className="mt-2 text-sm text-[#5A3F31]">
+                    WhatsApp commande:{' '}
+                    <a
+                      href={WHATSAPP_LINK}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="font-medium text-[#FFC107] hover:text-[#3E2723]"
+                    >
+                      {WHATSAPP_NUMBER}
+                    </a>
+                  </p>
+                </div>
+
                 <div className="flex justify-between">
                   <span className="text-[#5A3F31]/80">Articles ({totalItems})</span>
                   <span className="font-medium text-[#3E2723]">${totalPrice.toFixed(2)}</span>
@@ -242,51 +248,13 @@ export default function Cart() {
                 </div>
               </div>
 
-              {checkoutMessage && (
-                <div className="mt-4 rounded-lg bg-[#FFD54F]/20 border border-[#FFD54F]/40 p-4 text-sm text-[#3E2723]">
-                  {checkoutMessage}
-                </div>
-              )}
-
-              {!showCheckout ? (
-                <button
-                  onClick={() => setShowCheckout(true)}
-                  className="w-full mt-6 bg-[#FFD54F] hover:bg-[#FFC107] text-[#3E2723] py-3 px-4 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors"
-                >
-                  <CreditCard className="h-5 w-5" />
-                  Procéder au paiement
-                </button>
-              ) : (
-                <div className="mt-6 space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-[#3E2723] mb-2">Numéro de téléphone</label>
-                    <input
-                      type="tel"
-                      value={checkoutPhone}
-                      onChange={(e) => setCheckoutPhone(e.target.value)}
-                      placeholder="Entrez votre numéro de téléphone"
-                      className="w-full px-4 py-3 border border-[#FFD54F]/30 rounded-lg focus:ring-2 focus:ring-[#FFC107] focus:border-transparent bg-white text-[#3E2723] placeholder-[#5A3F31]/60"
-                    />
-                  </div>
-
-                  <button
-                    onClick={handleCheckout}
-                    disabled={checkoutLoading}
-                    className="w-full bg-[#FFD54F] hover:bg-[#FFC107] disabled:opacity-60 disabled:cursor-not-allowed text-[#3E2723] py-3 px-4 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors"
-                  >
-                    <CreditCard className="h-5 w-5" />
-                    {checkoutLoading ? 'Envoi de la commande...' : 'Confirmer la commande'}
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setShowCheckout(false)}
-                    className="w-full text-center text-[#5A3F31] hover:text-[#3E2723] bg-[#FFF3E0] border border-[#FFD54F]/20 py-3 px-4 rounded-lg"
-                  >
-                    Annuler
-                  </button>
-                </div>
-              )}
+              <button
+                onClick={handleCheckout}
+                className="w-full mt-6 bg-[#FFD54F] hover:bg-[#FFC107] text-[#3E2723] py-3 px-4 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors"
+              >
+                <CreditCard className="h-5 w-5" />
+                Procéder au paiement
+              </button>
 
               <p className="text-xs text-[#5A3F31]/60 text-center mt-4">
                 Paiement sécurisé par chiffrement standard de l'industrie

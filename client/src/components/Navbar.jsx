@@ -104,9 +104,7 @@ export default function Navbar() {
               </>
             ) : (
               <>
-                <span className="px-3 py-2 bg-[#5D4037] border border-[#FFD54F]/25 rounded-md text-sm text-[#FFF3E0]">
-                  {roleLabel}
-                </span>
+               
                 <button
                   onClick={handleLogout}
                   className="px-3 py-2 bg-[#FFD54F] hover:bg-[#FFC107] rounded-md text-[#3E2723] text-sm font-semibold"
