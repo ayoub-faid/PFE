@@ -28,12 +28,15 @@ export default function Categories() {
       const categoriesData = categoriesRes.data.data || [];
       const productsData = productsRes.data.data || [];
 
+      console.log('Categories fetched:', categoriesData.length, categoriesData);
+      console.log('Products fetched:', productsData.length);
+
       setCategories(categoriesData);
 
       // Calculate stats for each category
       const stats = {};
       categoriesData.forEach(category => {
-        const categoryProducts = productsData.filter(product => product.category._id === category._id);
+        const categoryProducts = productsData.filter(product => product.category && product.category._id === category._id);
         stats[category._id] = {
           productCount: categoryProducts.length,
           totalValue: categoryProducts.reduce((sum, product) => sum + (product.price * product.stock.available), 0),

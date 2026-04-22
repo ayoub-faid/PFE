@@ -88,22 +88,22 @@ export default function Cart() {
       {/* Header */}
       <div className="bg-white shadow-sm border-b border-[#FFD54F]/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
               <Link
                 to="/products"
-                className="flex items-center gap-2 text-[#5A3F31] hover:text-[#3E2723]"
+                className="flex items-center gap-2 text-[#5A3F31] hover:text-[#3E2723] text-sm sm:text-base"
               >
                 <ArrowLeft className="h-5 w-5" />
                 Continuer vos achats
               </Link>
-              <div className="h-6 w-px bg-[#FFD54F]/30"></div>
-              <h1 className="text-2xl font-bold text-[#3E2723]">Panier d'achat</h1>
+              <div className="hidden sm:block h-6 w-px bg-[#FFD54F]/30"></div>
+              <h1 className="text-xl sm:text-2xl font-bold text-[#3E2723]">Panier d'achat</h1>
             </div>
 
             <button
               onClick={handleClearCart}
-              className="text-[#FFC107] hover:text-[#3E2723] text-sm font-medium"
+              className="text-[#FFC107] hover:text-[#3E2723] text-sm font-medium self-start sm:self-auto"
             >
               Vider le panier
             </button>
@@ -147,29 +147,31 @@ export default function Cart() {
                           <div className="min-w-0 flex-1">
                             <Link
                               to={`/products/${item._id}`}
-                              className="text-lg font-medium text-[#3E2723] hover:text-[#FFC107] transition-colors"
+                              className="text-lg font-medium text-[#3E2723] hover:text-[#FFC107] transition-colors block"
                             >
-                              {item.name}
+                              <span className="line-clamp-2 leading-tight">
+                                {item.name}
+                              </span>
                             </Link>
-                            <p className="text-sm text-[#5A3F31]/80 mt-1">
+                            <p className="text-sm text-[#5A3F31]/80 mt-1 truncate">
                               Catégorie: {item.category?.name}
                             </p>
-                            <p className="text-sm text-[#5A3F31]/80">
+                            <p className="text-sm text-[#5A3F31]/80 truncate">
                               SKU: {item.sku}
                             </p>
                           </div>
 
                           <button
                             onClick={() => handleRemoveItem(item._id)}
-                            className="text-[#FFC107] hover:text-[#3E2723] p-1"
+                            className="text-[#FFC107] hover:text-[#3E2723] p-1 flex-shrink-0 ml-2"
                           >
                             <Trash2 className="h-5 w-5" />
                           </button>
                         </div>
 
                         {/* Quantity and Price */}
-                        <div className="flex items-center justify-between mt-4">
-                          <div className="flex items-center gap-3">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between mt-4 gap-3">
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
                             <div className="flex items-center border border-[#FFD54F]/20 rounded-lg">
                               <button
                                 onClick={() => handleQuantityChange(item._id, item.quantity - 1)}
@@ -190,11 +192,11 @@ export default function Cart() {
                             </div>
 
                             <span className="text-sm text-[#5A3F31]/80">
-                              Disponibles: {item.stock.available}
+                              Stock: {item.stock.available}
                             </span>
                           </div>
 
-                          <div className="text-right">
+                          <div className="text-right sm:text-right">
                             <div className="text-lg font-semibold text-[#FFC107]">
                               ${(item.price * item.quantity).toFixed(2)}
                             </div>

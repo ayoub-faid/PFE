@@ -19,7 +19,16 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const uploadDir = path.join(__dirname, process.env.UPLOAD_DIR || 'uploads');
-app.use('/uploads', express.static(uploadDir));
+app.use('/uploads', express.static(uploadDir, {
+  setHeaders: (res, filePath) => {
+    const ext = path.extname(filePath).toLowerCase();
+
+    // Some uploaded images come as .jfif; serve with a proper image MIME.
+    if (ext === '.jfif' || ext === '.jpe') {
+      res.setHeader('Content-Type', 'image/jpeg');
+    }
+  }
+}));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);

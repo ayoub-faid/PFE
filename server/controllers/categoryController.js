@@ -1,5 +1,24 @@
 const Category = require('../models/Category');
 
+const buildCategoryImageUrl = (req, image) => {
+  if (!image || typeof image !== 'string') return null;
+  if (image.startsWith('http://') || image.startsWith('https://')) return image;
+
+  const normalized = image.startsWith('/uploads/')
+    ? image.replace(/^\/uploads\//, '')
+    : image;
+
+  return `${req.protocol}://${req.get('host')}/uploads/${encodeURIComponent(normalized)}`;
+};
+
+const serializeCategory = (req, categoryDoc) => {
+  const category = categoryDoc.toObject ? categoryDoc.toObject() : categoryDoc;
+  return {
+    ...category,
+    imageUrl: buildCategoryImageUrl(req, category.image)
+  };
+};
+
 // Create category
 const createCategory = async (req, res) => {
   try {
@@ -23,7 +42,7 @@ const createCategory = async (req, res) => {
 
     return res.status(201).json({
       message: 'Category created successfully',
-      data: category
+      data: serializeCategory(req, category)
     });
   } catch (error) {
     return res.status(500).json({
@@ -49,7 +68,7 @@ const getAllCategories = async (req, res) => {
 
     return res.status(200).json({
       message: 'Categories retrieved successfully',
-      data: categories,
+      data: categories.map((category) => serializeCategory(req, category)),
       count: categories.length
     });
   } catch (error) {
@@ -72,7 +91,7 @@ const getCategoryById = async (req, res) => {
 
     return res.status(200).json({
       message: 'Category retrieved successfully',
-      data: category
+      data: serializeCategory(req, category)
     });
   } catch (error) {
     return res.status(500).json({
@@ -116,7 +135,7 @@ const updateCategory = async (req, res) => {
 
     return res.status(200).json({
       message: 'Category updated successfully',
-      data: category
+      data: serializeCategory(req, category)
     });
   } catch (error) {
     return res.status(500).json({

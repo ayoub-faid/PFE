@@ -48,7 +48,8 @@ export default function Products() {
   };
 
   const filteredProducts = products.filter(product => {
-    const matchesCategory = selectedCategory === 'all' || product.category._id === selectedCategory;
+    const productCategoryId = product?.category?._id || product?.category;
+    const matchesCategory = selectedCategory === 'all' || productCategoryId === selectedCategory;
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (product.sku || '').toLowerCase().includes(searchTerm.toLowerCase());

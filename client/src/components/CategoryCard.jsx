@@ -4,13 +4,15 @@ import { Package, ArrowRight } from 'lucide-react';
 
 const getImageUrl = (image) => {
   if (!image) return null;
+  if (typeof image !== 'string') return null;
   if (image.startsWith('http://') || image.startsWith('https://')) return image;
   if (image.startsWith('/')) return `http://localhost:5000${image}`;
-  return `http://localhost:5000/uploads/${image}`;
+  return `http://localhost:5000/uploads/${encodeURIComponent(image)}`;
 };
 
 export default function CategoryCard({ category, stats = {} }) {
   const { productCount = 0, totalValue = 0, availableProducts = 0 } = stats;
+  const imageSource = category.imageUrl || getImageUrl(category.image);
 
   return (
     <Link
@@ -18,10 +20,10 @@ export default function CategoryCard({ category, stats = {} }) {
       className="group bg-[#FFF3E0]/95 rounded-2xl shadow-sm border border-[#FFD54F]/20 overflow-hidden hover:shadow-lg hover:border-[#FFC107] transition-all duration-200"
     >
       {/* Category Image */}
-      <div className="aspect-video bg-[#FFD54F]/20 relative overflow-hidden">
-        {category.image ? (
+      <div className="h-48 bg-[#FFD54F]/20 relative overflow-hidden">
+        {imageSource ? (
           <img
-            src={getImageUrl(category.image)}
+            src={imageSource}
             alt={category.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
           />
@@ -32,14 +34,14 @@ export default function CategoryCard({ category, stats = {} }) {
         )}
 
         {/* Overlay with arrow */}
-        <div className="absolute inset-0 bg-[#3E2723] bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-200 flex items-center justify-center">
+        <div className="absolute inset-0 bg-[#3E2723]/0 group-hover:bg-[#3E2723]/20 transition-all duration-200 flex items-center justify-center">
           <ArrowRight className="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
         </div>
       </div>
 
       {/* Category Info */}
       <div className="p-6">
-        <h3 className="text-xl font-semibold text-[#3E2723] mb-2 group-hover:text-[#FFC107] transition-colors">
+        <h3 className="text-xl font-semibold text-[#3E2723] mb-2 group-hover:text-[#FFC107] transition-colors line-clamp-2">
           {category.name}
         </h3>
 
