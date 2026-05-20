@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { AlertTriangle, BarChart3, Download } from 'lucide-react';
 import productService from '../services/productService';
 
+const formatMAD = (value = 0) => `${Number(value).toFixed(2)} MAD`;
+
 export default function StockReport() {
   const [reportData, setReportData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -28,28 +30,57 @@ export default function StockReport() {
   const handleDownload = () => {
     if (!reportData?.data) return;
 
-    const csv = [
-      ['Name', 'SKU', 'Category', 'Price', 'Cost Price', 'Available', 'Reserved', 'Damaged', 'Total', 'Value', 'Status'],
-      ...reportData.data.map(item => [
-        item.name,
-        item.sku || '-',
-        item.category || '-',
-        item.price,
-        item.costPrice,
-        item.stockAvailable,
-        item.stockReserved,
-        item.stockDamaged,
-        item.totalStock,
-        item.value.toFixed(2),
-        item.active ? 'Active' : 'Inactive'
-      ])
-    ].map(row => row.join(',')).join('\n');
+    const headerRow = `
+      <tr>
+        <th>Name</th>
+        <th>SKU</th>
+        <th>Category</th>
+        <th>Price (MAD)</th>
+        <th>Cost Price (MAD)</th>
+        <th>Available</th>
+        <th>Reserved</th>
+        <th>Damaged</th>
+        <th>Total</th>
+        <th>Value (MAD)</th>
+        <th>Status</th>
+      </tr>
+    `;
 
-    const blob = new Blob([csv], { type: 'text/csv' });
+    const bodyRows = reportData.data.map((item) => `
+      <tr>
+        <td>${item.name}</td>
+        <td>${item.sku || '-'}</td>
+        <td>${item.category || '-'}</td>
+        <td>${Number(item.price).toFixed(2)}</td>
+        <td>${Number(item.costPrice).toFixed(2)}</td>
+        <td>${item.stockAvailable}</td>
+        <td>${item.stockReserved}</td>
+        <td>${item.stockDamaged}</td>
+        <td>${item.totalStock}</td>
+        <td>${Number(item.value).toFixed(2)}</td>
+        <td>${item.active ? 'Active' : 'Inactive'}</td>
+      </tr>
+    `).join('');
+
+    const excelContent = `
+      <html>
+        <head>
+          <meta charset="UTF-8" />
+        </head>
+        <body>
+          <table border="1">
+            ${headerRow}
+            ${bodyRows}
+          </table>
+        </body>
+      </html>
+    `;
+
+    const blob = new Blob([excelContent], { type: 'application/vnd.ms-excel;charset=utf-8;' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `stock-report-${new Date().toISOString().split('T')[0]}.csv`;
+    a.download = `stock-report-${new Date().toISOString().split('T')[0]}.xls`;
     a.click();
     window.URL.revokeObjectURL(url);
   };
@@ -81,7 +112,7 @@ export default function StockReport() {
           onClick={handleDownload}
           className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md flex items-center gap-2 transition font-medium"
         >
-          <Download className="w-4 h-4" /> Export CSV
+          <Download className="w-4 h-4" /> Export Excel
         </button>
       </div>
 
@@ -89,7 +120,7 @@ export default function StockReport() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
           <p className="text-gray-500 text-sm font-medium">Total Inventory Value</p>
-          <p className="text-3xl font-bold text-gray-900">${reportData?.totals?.totalValue?.toFixed(2) || '0.00'}</p>
+          <p className="text-3xl font-bold text-gray-900">{formatMAD(reportData?.totals?.totalValue)}</p>
           <p className="text-xs text-gray-500 mt-2">Selling price</p>
         </div>
 
@@ -155,7 +186,7 @@ export default function StockReport() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-600">{item.sku || '-'}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{item.category || '-'}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900">
-                    ${item.price.toFixed(2)}
+                    {formatMAD(item.price)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
                     <span className={`px-2 py-1 rounded text-xs font-semibold ${
@@ -176,7 +207,7 @@ export default function StockReport() {
                     {item.totalStock}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-medium text-gray-900">
-                    ${item.value.toFixed(2)}
+                    {formatMAD(item.value)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     <span className={`px-2 py-1 rounded text-xs font-medium ${
@@ -198,7 +229,7 @@ export default function StockReport() {
                   {reportData?.totals?.totalItems} units
                 </td>
                 <td className="px-6 py-3 text-right text-red-600 font-bold">
-                  ${reportData?.totals?.totalValue?.toFixed(2)}
+                  {formatMAD(reportData?.totals?.totalValue)}
                 </td>
                 <td className="px-6 py-3"></td>
               </tr>

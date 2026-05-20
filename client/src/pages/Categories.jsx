@@ -4,6 +4,8 @@ import categoryService from '../services/categoryService';
 import productService from '../services/productService';
 import CategoryCard from '../components/CategoryCard';
 
+const formatMAD = (value = 0) => `${Number(value).toFixed(2)} MAD`;
+
 export default function Categories() {
   const [categories, setCategories] = useState([]);
   const [categoryStats, setCategoryStats] = useState({});
@@ -138,7 +140,7 @@ export default function Categories() {
 
               <div className="text-center">
                 <div className="text-2xl font-bold text-purple-600">
-                  ${Object.values(categoryStats).reduce((sum, stats) => sum + stats.totalValue, 0).toFixed(2)}
+                  {formatMAD(Object.values(categoryStats).reduce((sum, stats) => sum + stats.totalValue, 0))}
                 </div>
                 <div className="text-sm text-gray-600">Total Inventory Value</div>
               </div>

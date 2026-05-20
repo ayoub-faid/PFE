@@ -1,8 +1,45 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Truck, Users, Lock, Zap, TrendingUp, Search } from 'lucide-react';
 
+const groceryPacks = [
+  {
+    name: "Pack Epicerie Essentiel",
+    target: "Petites epiceries de quartier",
+    price: "A partir de 2 450 DH",
+    items: ["Riz premium", "Sucre cristallise", "Farine", "Conserves mixtes"],
+    badgeStyle: "bg-[#3E2723] text-[#FFD54F]",
+  },
+  {
+    name: "Pack Epicerie Pro",
+    target: "Commerces a fort debit",
+    price: "A partir de 4 980 DH",
+    items: ["Huiles alimentaires", "Legumineuses", "Epices", "Boissons en gros"],
+    badgeStyle: "bg-[#FFD54F] text-[#3E2723]",
+  },
+  {
+    name: "Pack Epicerie Maxi",
+    target: "Grossistes et semi-grossistes",
+    price: "A partir de 8 900 DH",
+    items: ["Produits seches", "Produits entretien", "Snacking", "Produits saisonniers"],
+    badgeStyle: "bg-[#5D4037] text-[#FFF3E0]",
+  },
+];
+
 export default function Landing() {
+  const navigate = useNavigate();
+  const [homeSearchQuery, setHomeSearchQuery] = useState('');
+
+  const handleHomeProductSearch = (e) => {
+    e.preventDefault();
+    const q = homeSearchQuery.trim();
+    if (q) {
+      navigate(`/products?q=${encodeURIComponent(q)}`);
+    } else {
+      navigate('/products');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-brand-deep text-[#FFF3E0]">
       {/* Hero Section */}
@@ -92,17 +129,84 @@ export default function Landing() {
                     <p className="text-sm text-[#3E2723]/80">Meilleur prix du marché</p>
                   </div>
                 </div>
-                <div className="rounded-3xl border border-[#3E2723]/10 bg-white/90 p-4">
+                <form
+                  onSubmit={handleHomeProductSearch}
+                  className="rounded-3xl border border-[#3E2723]/10 bg-white/90 p-4"
+                >
                   <div className="flex items-center gap-3 text-[#3E2723]">
-                    <Search className="h-5 w-5" />
+                    <Search className="h-5 w-5 shrink-0" />
                     <p className="text-sm font-semibold">Rechercher un produit</p>
                   </div>
-                  <div className="mt-4 rounded-2xl bg-[#FFF3E0] p-4 text-[#3E2723]">
-                    <p className="text-sm">Riz premium, épices, conserves, sucre...</p>
+                  <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-stretch">
+                    <input
+                      type="search"
+                      value={homeSearchQuery}
+                      onChange={(e) => setHomeSearchQuery(e.target.value)}
+                      placeholder="Riz, épices, conserves, sucre..."
+                      autoComplete="off"
+                      className="min-w-0 flex-1 rounded-2xl border border-[#3E2723]/15 bg-[#FFF3E0] px-4 py-3 text-sm text-[#3E2723] placeholder:text-[#3E2723]/45 focus:border-[#FFC107] focus:outline-none focus:ring-2 focus:ring-[#FFC107]/40"
+                    />
+                    <button
+                      type="submit"
+                      className="rounded-2xl bg-[#3E2723] px-5 py-3 text-sm font-semibold text-[#FFD54F] transition hover:bg-[#2c1d19] sm:shrink-0"
+                    >
+                      Rechercher
+                    </button>
                   </div>
-                </div>
+                </form>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Grocery Packs Section */}
+      <section className="py-20 px-4 bg-brand-deep text-[#FFF3E0]">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center">
+            <p className="inline-flex items-center rounded-full border border-[#FFD54F]/40 bg-[#FFD54F]/15 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#FFD54F]">
+              Packs Epicerie
+            </p>
+            <h2 className="mt-6 text-4xl md:text-5xl font-bold">
+              Des packs prets a commander pour votre epicerie
+            </h2>
+            <p className="mt-4 max-w-3xl mx-auto text-[#FFF3E0]/85 text-lg">
+              Choisissez un pack adapte a votre volume de vente et gagnez du temps sur vos approvisionnements hebdomadaires.
+            </p>
+          </div>
+
+          <div className="mt-12 grid gap-8 md:grid-cols-3">
+            {groceryPacks.map((pack) => (
+              <div
+                key={pack.name}
+                className="rounded-[2rem] border border-[#FFD54F]/20 bg-[#FFF3E0]/95 p-7 text-[#3E2723] shadow-[0_24px_60px_rgba(0,0,0,0.2)]"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <h3 className="text-xl font-bold">{pack.name}</h3>
+                    <p className="mt-2 text-sm text-[#3E2723]/75">{pack.target}</p>
+                  </div>
+                  <span className={`rounded-full px-3 py-1 text-xs font-semibold ${pack.badgeStyle}`}>
+                    Disponible
+                  </span>
+                </div>
+                <p className="mt-5 text-2xl font-extrabold text-[#3E2723]">{pack.price}</p>
+                <ul className="mt-5 space-y-2 text-sm text-[#3E2723]/85">
+                  {pack.items.map((item) => (
+                    <li key={item} className="flex items-center gap-2">
+                      <span className="text-[#FFC107] font-bold">•</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Link
+                  to="/products"
+                  className="mt-7 inline-flex w-full items-center justify-center rounded-2xl bg-[#3E2723] px-4 py-3 text-sm font-semibold text-[#FFD54F] transition hover:bg-[#2c1d19]"
+                >
+                  Voir le pack
+                </Link>
+              </div>
+            ))}
           </div>
         </div>
       </section>

@@ -2,9 +2,20 @@ import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
-import { ShoppingCart, Menu, X } from 'lucide-react';
+import {
+  ShoppingCart,
+  Home,
+  Package,
+  Grid3X3,
+  Shield,
+  Truck,
+  LayoutDashboard,
+  LogIn,
+  UserPlus,
+  LogOut
+} from 'lucide-react';
 
-const activeClass = 'text-[#3E2723] bg-[#FFD54F] rounded-md px-3 py-2 font-semibold';
+const activeClass = 'text-[#3E2723] bg-[#FFD54F] rounded-md px-3 py-2 font-semibold shadow-sm';
 const normalClass = 'text-[#FFF3E0] hover:text-white hover:bg-[#5D4037] px-3 py-2 rounded-md transition';
 
 export default function Navbar() {
@@ -18,40 +29,50 @@ export default function Navbar() {
     navigate('/');
   };
 
-  const roleLabel = user ? user.role.toUpperCase() : null;
-
   return (
-    <nav className="bg-[#3E2723] text-[#FFF3E0] shadow-lg sticky top-0 z-50 border-b border-[#FFD54F]/20">
+    <nav className="bg-[#3E2723]/95 text-[#FFF3E0] shadow-lg sticky top-0 z-50 border-b border-[#FFD54F]/20 backdrop-blur">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex items-center h-[72px] gap-3">
           {/* Logo */}
-          <NavLink to="/" className="flex items-center gap-3 hover:opacity-90 flex-shrink-0">
+          <NavLink to="/" className="flex items-center gap-3 hover:opacity-90 flex-shrink-0 flex-1 min-w-0">
             <div className="bg-[#FFD54F] p-2 rounded-lg shadow-md shadow-[#00000033]">
               <span className="text-[#3E2723] font-bold text-xl">G</span>
             </div>
-            <div>
-              <span className="text-[#FFD54F] font-bold text-xl tracking-tight">Gros Products</span>
-              <p className="text-xs text-[#FFF3E0]/80">Grossiste alimentaire Maroc</p>
+            <div className="min-w-0">
+              <span className="text-[#FFD54F] font-bold text-xl tracking-tight block truncate">Gros Products</span>
+              <p className="text-xs text-[#FFF3E0]/80 truncate">Grossiste alimentaire Maroc</p>
             </div>
           </NavLink>
 
           {/* Center Navigation - Hidden on mobile */}
-          <div className="hidden md:flex md:items-center md:space-x-2">
+          <div className="hidden lg:flex lg:items-center lg:justify-center lg:space-x-1 lg:flex-1">
             <NavLink to="/" className={({ isActive }) => (isActive ? activeClass : normalClass)}>
-              Accueil
+              <span className="inline-flex items-center gap-2">
+                <Home className="h-4 w-4" />
+                Accueil
+              </span>
             </NavLink>
             <NavLink to="/products" className={({ isActive }) => (isActive ? activeClass : normalClass)}>
-              Produits
+              <span className="inline-flex items-center gap-2">
+                <Package className="h-4 w-4" />
+                Produits
+              </span>
             </NavLink>
             <NavLink to="/categories" className={({ isActive }) => (isActive ? activeClass : normalClass)}>
-              Catégories
+              <span className="inline-flex items-center gap-2">
+                <Grid3X3 className="h-4 w-4" />
+                Catégories
+              </span>
             </NavLink>
             {isAuthenticated && user?.role === 'admin' && (
               <NavLink
                 to="/admin"
                 className={({ isActive }) => (isActive ? activeClass : normalClass)}
               >
-                Admin
+                <span className="inline-flex items-center gap-2">
+                  <Shield className="h-4 w-4" />
+                  Admin
+                </span>
               </NavLink>
             )}
             {isAuthenticated && user?.role === 'delivery' && (
@@ -59,7 +80,10 @@ export default function Navbar() {
                 to="/delivery"
                 className={({ isActive }) => (isActive ? activeClass : normalClass)}
               >
-                Livraisons
+                <span className="inline-flex items-center gap-2">
+                  <Truck className="h-4 w-4" />
+                  Livraisons
+                </span>
               </NavLink>
             )}
             {isAuthenticated && user?.role === 'client' && (
@@ -67,13 +91,16 @@ export default function Navbar() {
                 to="/dashboard"
                 className={({ isActive }) => (isActive ? activeClass : normalClass)}
               >
-                Tableau de bord
+                <span className="inline-flex items-center gap-2">
+                  <LayoutDashboard className="h-4 w-4" />
+                  Tableau de bord
+                </span>
               </NavLink>
             )}
           </div>
 
           {/* Right side - Cart and Auth - stays on right */}
-          <div className="hidden md:flex md:items-center md:space-x-3 md:ml-auto">
+          <div className="hidden md:flex md:items-center md:justify-end md:space-x-2 md:flex-1">
             {/* Cart Icon */}
             <NavLink
               to="/cart"
@@ -93,13 +120,19 @@ export default function Navbar() {
                   to="/login"
                   className={({ isActive }) => (isActive ? activeClass : normalClass)}
                 >
-                  Connexion
+                  <span className="inline-flex items-center gap-2">
+                    <LogIn className="h-4 w-4" />
+                    Connexion
+                  </span>
                 </NavLink>
                 <NavLink
                   to="/register"
                   className={({ isActive }) => (isActive ? activeClass : normalClass)}
                 >
-                  Inscription
+                  <span className="inline-flex items-center gap-2">
+                    <UserPlus className="h-4 w-4" />
+                    Inscription
+                  </span>
                 </NavLink>
               </>
             ) : (
@@ -107,8 +140,9 @@ export default function Navbar() {
                
                 <button
                   onClick={handleLogout}
-                  className="px-3 py-2 bg-[#FFD54F] hover:bg-[#FFC107] rounded-md text-[#3E2723] text-sm font-semibold"
+                  className="px-3 py-2 bg-[#FFD54F] hover:bg-[#FFC107] rounded-md text-[#3E2723] text-sm font-semibold inline-flex items-center gap-2"
                 >
+                  <LogOut className="h-4 w-4" />
                   Déconnexion
                 </button>
               </>
@@ -143,22 +177,25 @@ export default function Navbar() {
             <NavLink
               to="/"
               onClick={() => setMenuOpen(false)}
-              className={({ isActive }) => (isActive ? activeClass : normalClass)}
+              className={({ isActive }) => (isActive ? activeClass : normalClass) + ' flex items-center gap-2'}
             >
+              <Home className="h-4 w-4" />
               Accueil
             </NavLink>
             <NavLink
               to="/products"
               onClick={() => setMenuOpen(false)}
-              className={({ isActive }) => (isActive ? activeClass : normalClass)}
+              className={({ isActive }) => (isActive ? activeClass : normalClass) + ' flex items-center gap-2'}
             >
+              <Package className="h-4 w-4" />
               Produits
             </NavLink>
             <NavLink
               to="/categories"
               onClick={() => setMenuOpen(false)}
-              className={({ isActive }) => (isActive ? activeClass : normalClass)}
+              className={({ isActive }) => (isActive ? activeClass : normalClass) + ' flex items-center gap-2'}
             >
+              <Grid3X3 className="h-4 w-4" />
               Catégories
             </NavLink>
             <NavLink
@@ -173,8 +210,9 @@ export default function Navbar() {
               <NavLink
                 to="/admin"
                 onClick={() => setMenuOpen(false)}
-                className={({ isActive }) => (isActive ? activeClass : normalClass)}
+                className={({ isActive }) => (isActive ? activeClass : normalClass) + ' flex items-center gap-2'}
               >
+                <Shield className="h-4 w-4" />
                 Admin Panel
               </NavLink>
             )}
@@ -182,8 +220,9 @@ export default function Navbar() {
               <NavLink
                 to="/delivery"
                 onClick={() => setMenuOpen(false)}
-                className={({ isActive }) => (isActive ? activeClass : normalClass)}
+                className={({ isActive }) => (isActive ? activeClass : normalClass) + ' flex items-center gap-2'}
               >
+                <Truck className="h-4 w-4" />
                 Delivery Panel
               </NavLink>
             )}
@@ -191,8 +230,9 @@ export default function Navbar() {
               <NavLink
                 to="/dashboard"
                 onClick={() => setMenuOpen(false)}
-                className={({ isActive }) => (isActive ? activeClass : normalClass)}
+                className={({ isActive }) => (isActive ? activeClass : normalClass) + ' flex items-center gap-2'}
               >
+                <LayoutDashboard className="h-4 w-4" />
                 My Products
               </NavLink>
             )}
@@ -201,15 +241,17 @@ export default function Navbar() {
                 <NavLink
                   to="/login"
                   onClick={() => setMenuOpen(false)}
-                  className={({ isActive }) => (isActive ? activeClass : normalClass)}
+                  className={({ isActive }) => (isActive ? activeClass : normalClass) + ' flex items-center gap-2'}
                 >
+                  <LogIn className="h-4 w-4" />
                   Connexion
                 </NavLink>
                 <NavLink
                   to="/register"
                   onClick={() => setMenuOpen(false)}
-                  className={({ isActive }) => (isActive ? activeClass : normalClass)}
+                  className={({ isActive }) => (isActive ? activeClass : normalClass) + ' flex items-center gap-2'}
                 >
+                  <UserPlus className="h-4 w-4" />
                   Inscription
                 </NavLink>
               </>
@@ -220,8 +262,9 @@ export default function Navbar() {
                     handleLogout();
                     setMenuOpen(false);
                   }}
-                  className="w-full text-left text-gray-300 hover:text-white px-3 py-2 rounded-md transition bg-red-600 hover:bg-red-700"
+                  className="w-full text-left text-gray-300 hover:text-white px-3 py-2 rounded-md transition bg-red-600 hover:bg-red-700 inline-flex items-center gap-2"
                 >
+                  <LogOut className="h-4 w-4" />
                   Logout
                 </button>
               </>

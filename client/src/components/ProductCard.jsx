@@ -9,6 +9,8 @@ const getImageUrl = (image) => {
   return `http://localhost:5000/uploads/${image}`;
 };
 
+const formatMAD = (value = 0) => `${Number(value).toFixed(2)} MAD`;
+
 export default function ProductCard({ product, onAddToCart, cartItemCount = 0 }) {
   const isOutOfStock = product.stock.available === 0;
 
@@ -61,11 +63,11 @@ export default function ProductCard({ product, onAddToCart, cartItemCount = 0 })
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-baseline gap-2">
             <span className="text-lg font-bold text-[#FFC107]">
-              ${product.price.toFixed(2)}
+              {formatMAD(product.price)}
             </span>
             {product.costPrice && (
               <span className="text-sm text-[#5A3F31]/60 line-through">
-                ${product.costPrice.toFixed(2)}
+                {formatMAD(product.costPrice)}
               </span>
             )}
           </div>

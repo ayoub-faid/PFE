@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import authService from '../services/authService';
+import { AUTH_INVALID_EVENT } from '../services/authService';
 
 const AuthContext = createContext();
 
@@ -20,11 +21,28 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const savedUser = authService.getCurrentUser();
     const savedToken = authService.getToken();
-    if (savedUser && savedToken) {
+    authService.setupAuthInterceptor();
+
+    if (savedUser && savedToken && !authService.isTokenExpired(savedToken)) {
       setUser(savedUser);
       setToken(savedToken);
+    } else if (savedUser || savedToken) {
+      authService.logout();
     }
+
+    const handleInvalidToken = () => {
+      setUser(null);
+      setToken(null);
+      setError('Session expirée, reconnectez-vous.');
+      setLoading(false);
+    };
+
+    window.addEventListener(AUTH_INVALID_EVENT, handleInvalidToken);
     setLoading(false);
+
+    return () => {
+      window.removeEventListener(AUTH_INVALID_EVENT, handleInvalidToken);
+    };
   }, []);
 
   const register = async (name, email, password, role = 'client') => {

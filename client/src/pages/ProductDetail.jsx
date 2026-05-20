@@ -12,6 +12,8 @@ const getImageUrl = (image) => {
   return `http://localhost:5000/uploads/${image}`;
 };
 
+const formatMAD = (value = 0) => `${Number(value).toFixed(2)} MAD`;
+
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -187,11 +189,11 @@ export default function ProductDetail() {
               <div className="flex items-center gap-4 mb-4">
                 <div className="flex items-baseline gap-2">
                   <span className="text-3xl font-bold text-white">
-                    ${product.price.toFixed(2)}
+                    {formatMAD(product.price)}
                   </span>
                   {product.costPrice && (
                     <span className="text-lg text-gray-400 line-through">
-                      ${product.costPrice.toFixed(2)}
+                      {formatMAD(product.costPrice)}
                     </span>
                   )}
                 </div>
@@ -311,7 +313,7 @@ export default function ProductDetail() {
                   <>
                     <div>
                       <span className="text-gray-600">Cost Price:</span>
-                      <span className="font-medium text-gray-900 ml-1">${product.costPrice.toFixed(2)}</span>
+                      <span className="font-medium text-gray-900 ml-1">{formatMAD(product.costPrice)}</span>
                     </div>
                     <div>
                       <span className="text-gray-600">Profit Margin:</span>
@@ -379,7 +381,7 @@ export default function ProductDetail() {
                       {relatedProduct.name}
                     </h3>
                     <p className="text-sm text-gray-600 mb-2">
-                      ${relatedProduct.price.toFixed(2)}
+                      {formatMAD(relatedProduct.price)}
                     </p>
                     <div className="flex items-center gap-1">
                       <div className="flex">

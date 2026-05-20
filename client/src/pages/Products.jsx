@@ -22,10 +22,10 @@ export default function Products() {
   }, []);
 
   useEffect(() => {
-    // Read category from URL parameters
     const categoryParam = searchParams.get('category');
-    if (categoryParam && categoryParam !== selectedCategory) {
-      setSelectedCategory(categoryParam);
+    setSelectedCategory(categoryParam || 'all');
+    if (searchParams.has('q')) {
+      setSearchTerm(searchParams.get('q') || '');
     }
   }, [searchParams]);
 
@@ -50,9 +50,11 @@ export default function Products() {
   const filteredProducts = products.filter(product => {
     const productCategoryId = product?.category?._id || product?.category;
     const matchesCategory = selectedCategory === 'all' || productCategoryId === selectedCategory;
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (product.sku || '').toLowerCase().includes(searchTerm.toLowerCase());
+    const term = searchTerm.toLowerCase();
+    const matchesSearch =
+      (product.name || '').toLowerCase().includes(term) ||
+      (product.description || '').toLowerCase().includes(term) ||
+      (product.sku || '').toLowerCase().includes(term);
     return matchesCategory && matchesSearch;
   });
 
@@ -129,7 +131,11 @@ export default function Products() {
                 <button
                   onClick={() => {
                     setSelectedCategory('all');
-                    setSearchParams({});
+                    setSearchParams((prev) => {
+                      const next = new URLSearchParams(prev);
+                      next.delete('category');
+                      return next;
+                    });
                   }}
                   className={`px-4 py-2 rounded-full text-sm font-medium ${
                     selectedCategory === 'all'
@@ -144,7 +150,11 @@ export default function Products() {
                     key={category._id}
                     onClick={() => {
                       setSelectedCategory(category._id);
-                      setSearchParams({ category: category._id });
+                      setSearchParams((prev) => {
+                        const next = new URLSearchParams(prev);
+                        next.set('category', category._id);
+                        return next;
+                      });
                     }}
                     className={`px-4 py-2 rounded-full text-sm font-medium ${
                       selectedCategory === category._id

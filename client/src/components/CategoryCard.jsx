@@ -10,6 +10,8 @@ const getImageUrl = (image) => {
   return `http://localhost:5000/uploads/${encodeURIComponent(image)}`;
 };
 
+const formatMAD = (value = 0) => `${Number(value).toFixed(2)} MAD`;
+
 export default function CategoryCard({ category, stats = {} }) {
   const { productCount = 0, totalValue = 0, availableProducts = 0 } = stats;
   const imageSource = category.imageUrl || getImageUrl(category.image);
@@ -65,7 +67,7 @@ export default function CategoryCard({ category, stats = {} }) {
 
           <div className="flex justify-between items-center">
             <span className="text-sm text-[#5A3F31]/80">Valeur:</span>
-            <span className="font-medium text-[#3E2723]">${totalValue.toFixed(2)}</span>
+            <span className="font-medium text-[#3E2723]">{formatMAD(totalValue)}</span>
           </div>
         </div>
 

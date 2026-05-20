@@ -9,9 +9,10 @@ const WHATSAPP_LINK = 'https://wa.me/212696630684';
 
 const getImageUrl = (image) => {
   if (!image) return null;
+  if (typeof image !== 'string') return null;
   if (image.startsWith('http://') || image.startsWith('https://')) return image;
   if (image.startsWith('/')) return `http://localhost:5000${image}`;
-  return `http://localhost:5000/uploads/${image}`;
+  return `http://localhost:5000/uploads/${encodeURIComponent(image)}`;
 };
 
 export default function Cart() {
@@ -122,6 +123,10 @@ export default function Cart() {
                             src={getImageUrl(item.image)}
                             alt={item.name}
                             className="w-full h-full object-cover"
+                            loading="lazy"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                            }}
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
