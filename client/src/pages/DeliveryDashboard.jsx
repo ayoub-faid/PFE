@@ -1,140 +1,80 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Truck, MapPin, Clock, CheckCircle } from 'lucide-react';
+import { Truck, MapPin, Clock, CheckCircle, ArrowRight, Package } from 'lucide-react';
 
 export default function DeliveryDashboard() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
-
-  const DeliveryCard = ({ icon: Icon, title, count, status }) => (
-    <div className="bg-gray-800 rounded-lg shadow-md p-6 border-l-4 border-red-500">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-gray-400 text-sm font-medium">{title}</p>
-          <p className="text-4xl font-bold text-white">{count}</p>
-          <p className="text-xs text-gray-400 mt-1">{status}</p>
-        </div>
-        <Icon className="w-12 h-12 text-red-400" />
-      </div>
-    </div>
-  );
+  const cards = [
+    { icon: Truck, title: 'Livraisons actives', count: '0', status: 'Aucune assignée', color: 'from-primary to-primary-dark' },
+    { icon: CheckCircle, title: 'Complétées ajd', count: '0', status: 'Cette semaine', color: 'from-accent to-[#7a4a24]' },
+    { icon: MapPin, title: 'Itinéraires', count: '0', status: 'Ce mois', color: 'from-warning to-[#7a7450]' },
+    { icon: Clock, title: 'Temps moyen', count: '--', status: 'Par livraison', color: 'from-primary to-primary-dark' },
+  ];
 
   return (
-    <div className="min-h-screen bg-gray-900">
-      {/* Navbar */}
-      <nav className="bg-gray-900 text-white border-b border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
-            <div>
-              <h1 className="text-2xl font-bold text-red-500">Gros Products</h1>
-              <p className="text-red-300 text-sm">Delivery Dashboard</p>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="text-right">
-                <p className="text-sm text-gray-300">{user?.name}</p>
-                <p className="text-xs text-red-300">{user?.role}</p>
-              </div>
-              <button
-                onClick={handleLogout}
-                className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-md text-sm font-medium transition"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
-        </div>
-      </nav>
+    <div className="min-h-screen bg-gray-50">
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        {/* Welcome Section */}
+      <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h2 className="text-2xl font-bold text-white mb-2">Welcome, {user?.name}!</h2>
-          <p className="text-gray-600">Manage your deliveries and track routes</p>
+          <h2 className="text-2xl font-bold text-gray-900">Bienvenue, {user?.name}!</h2>
+          <p className="text-gray-400 text-sm mt-1">Gérez vos livraisons et suivez vos itinéraires.</p>
         </div>
 
-        {/* Statistics Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <DeliveryCard
-            icon={Truck}
-            title="Active Deliveries"
-            count="0"
-            status="No deliveries assigned"
-          />
-          <DeliveryCard
-            icon={CheckCircle}
-            title="Completed Today"
-            count="0"
-            status="This week"
-          />
-          <DeliveryCard
-            icon={MapPin}
-            title="Total Routes"
-            count="0"
-            status="This month"
-          />
-          <DeliveryCard
-            icon={Clock}
-            title="Avg. Time"
-            count="--"
-            status="Per delivery"
-          />
+        {/* Stats */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+          {cards.map((card, i) => (
+            <div key={i} className="bg-white rounded-xl border border-gray-200 p-5 card-hover">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">{card.title}</p>
+                  <p className="text-3xl font-bold text-gray-900 mt-1">{card.count}</p>
+                  <p className="text-[11px] text-gray-400 mt-1">{card.status}</p>
+                </div>
+                <div className={`w-12 h-12 bg-gradient-to-br ${card.color} rounded-xl flex items-center justify-center shadow-sm`}>
+                  <card.icon className="h-6 w-6 text-white" />
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
 
-        {/* Main Content */}
-        <div className="bg-gray-800 rounded-lg shadow-lg p-8 border border-gray-700">
-          <h3 className="text-xl font-bold text-white mb-6">Delivery Actions</h3>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-red-900/20 p-6 rounded-lg border-2 border-red-800">
-              <Truck className="w-8 h-8 text-red-400 mb-3" />
-              <h4 className="font-semibold text-red-300 mb-2">View Active Deliveries</h4>
-              <p className="text-red-200 text-sm mb-4">See all deliveries assigned to you</p>
-              <button className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition font-medium text-sm">
-                View Deliveries
-              </button>
-            </div>
-
-            <div className="bg-orange-50 p-6 rounded-lg border-2 border-orange-200">
-              <MapPin className="w-8 h-8 text-orange-600 mb-3" />
-              <h4 className="font-semibold text-orange-900 mb-2">Track Route</h4>
-              <p className="text-orange-700 text-sm mb-4">View your optimized delivery route</p>
-              <button className="bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-700 transition font-medium text-sm">
-                View Route
-              </button>
-            </div>
-
-            <div className="bg-orange-50 p-6 rounded-lg border-2 border-orange-200">
-              <CheckCircle className="w-8 h-8 text-orange-600 mb-3" />
-              <h4 className="font-semibold text-orange-900 mb-2">Update Status</h4>
-              <p className="text-orange-700 text-sm mb-4">Update delivery status and add notes</p>
-              <button className="bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-700 transition font-medium text-sm">
-                Update Status
-              </button>
-            </div>
-
-            <div className="bg-orange-50 p-6 rounded-lg border-2 border-orange-200">
-              <Clock className="w-8 h-8 text-orange-600 mb-3" />
-              <h4 className="font-semibold text-orange-900 mb-2">History</h4>
-              <p className="text-orange-700 text-sm mb-4">View your delivery history</p>
-              <button className="bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-700 transition font-medium text-sm">
-                View History
-              </button>
-            </div>
+        {/* Actions */}
+        <div className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8">
+          <h3 className="text-lg font-bold text-gray-900 mb-6">Actions</h3>
+          <div className="grid sm:grid-cols-2 gap-4">
+            {[
+              { icon: Truck, title: 'Livraisons actives', desc: 'Consultez vos livraisons assignées', color: 'bg-primary/5', iconColor: 'text-primary', btn: 'btn-primary' },
+              { icon: MapPin, title: 'Suivre itinéraire', desc: 'Visualisez votre route optimisée', color: 'bg-accent/5', iconColor: 'text-accent', btn: 'bg-accent text-white hover:bg-accent/90' },
+              { icon: CheckCircle, title: 'Mettre à jour statut', desc: 'Actualisez l\'état des livraisons', color: 'bg-warning/5', iconColor: 'text-warning', btn: 'bg-warning text-white hover:bg-[#7a7450]' },
+              { icon: Clock, title: 'Historique', desc: 'Consultez votre historique complet', color: 'bg-gray-50', iconColor: 'text-gray-500', btn: 'btn-secondary' },
+            ].map((a, i) => (
+              <div key={i} className={`${a.color} rounded-xl p-5 border border-transparent hover:border-gray-200 transition-all card-hover`}>
+                <div className="flex items-start justify-between">
+                  <div>
+                    <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center mb-3 shadow-sm">
+                      <a.icon className={`h-5 w-5 ${a.iconColor}`} />
+                    </div>
+                    <h4 className="font-semibold text-gray-900">{a.title}</h4>
+                    <p className="text-sm text-gray-400 mt-1">{a.desc}</p>
+                  </div>
+                </div>
+                <button className={`mt-4 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${a.btn}`}>
+                  Accéder <ArrowRight className="h-3.5 w-3.5 inline ml-1" />
+                </button>
+              </div>
+            ))}
           </div>
 
-          {/* Info Section */}
-          <div className="mt-8 p-4 bg-red-50 border-l-4 border-red-500 rounded">
-            <p className="text-blue-900 text-sm">
-              <span className="font-semibold">Note:</span> Delivery features are currently under development. 
-              Check back soon for full delivery management capabilities.
-            </p>
+          <div className="mt-6 bg-warning-50 border border-warning/20 rounded-xl p-4">
+            <div className="flex items-start gap-3">
+              <Package className="h-5 w-5 text-warning mt-0.5 shrink-0" />
+              <p className="text-sm text-gray-600">
+                <span className="font-semibold text-gray-900">Note:</span> Les fonctionnalités de livraison sont en cours de développement.
+              </p>
+            </div>
           </div>
         </div>
       </main>

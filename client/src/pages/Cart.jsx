@@ -1,9 +1,9 @@
 import React from 'react';
-import { ShoppingCart, Plus, Minus, Trash2, ArrowLeft, CreditCard, Package } from 'lucide-react';
+import { ShoppingCart, Plus, Minus, Trash2, ArrowLeft, CreditCard, Package, BadgeCheck, Truck, Shield, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 
-const PAYMENT_METHOD = 'Cash on Delivery';
+const PAYMENT_METHOD = 'Paiement à la livraison';
 const WHATSAPP_NUMBER = '+212696630684';
 const WHATSAPP_LINK = 'https://wa.me/212696630684';
 
@@ -15,58 +15,36 @@ const getImageUrl = (image) => {
   return `http://localhost:5000/uploads/${encodeURIComponent(image)}`;
 };
 
+const formatMAD = (v) => Number(v).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' MAD';
+
 export default function Cart() {
   const { cartItems, totalItems, totalPrice, updateQuantity, removeFromCart, clearCart } = useCart();
 
-  const handleQuantityChange = (productId, newQuantity) => {
-    updateQuantity(productId, newQuantity);
-  };
-
-  const handleRemoveItem = (productId) => {
-    if (window.confirm('Are you sure you want to remove this item from your cart?')) {
-      removeFromCart(productId);
-    }
-  };
-
-  const handleClearCart = () => {
-    if (window.confirm('Are you sure you want to clear your entire cart?')) {
-      clearCart();
-    }
-  };
-
   const handleCheckout = () => {
-    const orderLines = cartItems.map((item, index) => {
-      const lineTotal = (item.price * item.quantity).toFixed(2);
-      return `${index + 1}. ${item.name} x${item.quantity} = $${lineTotal}`;
-    });
-
-    const message = [
-      'Hello, I want to place an order:',
-      '',
-      ...orderLines,
-      '',
-      `Total items: ${totalItems}`,
-      `Total amount: $${(totalPrice * 1.1).toFixed(2)}`,
-      `Payment method: ${PAYMENT_METHOD}`
+    const lines = cartItems.map((item, i) =>
+      `${i + 1}. ${item.name} x${item.quantity} = ${(item.price * item.quantity).toFixed(2)} MAD`
+    );
+    const msg = [
+      'Bonjour, je souhaite passer une commande:',
+      '', ...lines, '',
+      `Total articles: ${totalItems}`,
+      `Montant total: ${(totalPrice * 1.1).toFixed(2)} MAD`,
+      `Mode de paiement: ${PAYMENT_METHOD}`
     ].join('\n');
-
-    const whatsappUrl = `${WHATSAPP_LINK}?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+    window.open(`${WHATSAPP_LINK}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener,noreferrer');
   };
 
   if (cartItems.length === 0) {
     return (
-      <div className="min-h-screen bg-[#FFF3E0] flex items-center justify-center">
-        <div className="text-center">
-          <ShoppingCart className="h-24 w-24 text-[#FFD54F]/60 mx-auto mb-6" />
-          <h1 className="text-3xl font-bold text-[#3E2723] mb-4">Votre panier est vide</h1>
-          <p className="text-[#5A3F31]/80 mb-8">Ajoutez des produits pour commencer !</p>
-          <Link
-            to="/products"
-            className="inline-flex items-center gap-2 bg-[#FFD54F] hover:bg-[#FFC107] text-[#3E2723] px-6 py-3 rounded-lg font-medium transition-colors"
-          >
-            <Package className="h-5 w-5" />
-            Consulter les produits
+      <div className="min-h-[70vh] flex items-center justify-center">
+        <div className="text-center max-w-sm">
+          <div className="w-24 h-24 bg-gray-50 rounded-3xl flex items-center justify-center mx-auto mb-6">
+            <ShoppingCart className="h-12 w-12 text-gray-200" />
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Votre panier est vide</h1>
+          <p className="text-gray-400 mb-8">Ajoutez des produits pour commencer !</p>
+          <Link to="/products" className="btn-primary px-8 py-3">
+            <Package className="h-5 w-5" /> Découvrir nos produits
           </Link>
         </div>
       </div>
@@ -74,196 +52,128 @@ export default function Cart() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FFF3E0]">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b border-[#FFD54F]/20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-              <Link
-                to="/products"
-                className="flex items-center gap-2 text-[#5A3F31] hover:text-[#3E2723] text-sm sm:text-base"
-              >
+    <div className="min-h-screen bg-gray-50">
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Link to="/products" className="text-gray-400 hover:text-gray-600 transition-colors">
                 <ArrowLeft className="h-5 w-5" />
-                Continuer vos achats
               </Link>
-              <div className="hidden sm:block h-6 w-px bg-[#FFD54F]/30"></div>
-              <h1 className="text-xl sm:text-2xl font-bold text-[#3E2723]">Panier d'achat</h1>
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Panier d'achat</h1>
+              <span className="text-sm text-gray-400 bg-gray-50 px-3 py-1 rounded-full">{totalItems} articles</span>
             </div>
-
-            <button
-              onClick={handleClearCart}
-              className="text-[#FFC107] hover:text-[#3E2723] text-sm font-medium self-start sm:self-auto"
-            >
-              Vider le panier
+            <button onClick={() => { if (window.confirm('Vider le panier ?')) clearCart(); }}
+              className="text-sm text-red-500 hover:text-red-600 font-medium transition-colors">
+              <Trash2 className="h-4 w-4 inline mr-1" /> Vider
             </button>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Cart Items */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-2xl shadow-sm border border-[#FFD54F]/20">
-              <div className="p-6 border-b border-[#FFD54F]/20">
-                <h2 className="text-lg font-semibold text-[#3E2723]">
-                  Articles ({totalItems})
-                </h2>
-              </div>
-
-              <div className="divide-y divide-[#FFD54F]/20">
-                {cartItems.map(item => (
-                  <div key={item._id} className="p-6">
-                    <div className="flex gap-4">
-                      {/* Product Image */}
-                      <div className="w-20 h-20 bg-[#FFD54F]/20 rounded-lg flex-shrink-0 overflow-hidden">
-                        {item.image ? (
-                          <img
-                            src={getImageUrl(item.image)}
-                            alt={item.name}
-                            className="w-full h-full object-cover"
-                            loading="lazy"
-                            onError={(e) => {
-                              e.currentTarget.style.display = 'none';
-                            }}
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <Package className="h-8 w-8 text-[#FFD54F]/60" />
-                          </div>
-                        )}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Items */}
+          <div className="lg:col-span-2 space-y-4">
+            {cartItems.map(item => (
+              <div key={item._id} className="bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
+                <div className="flex gap-4">
+                  <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gray-50 rounded-xl flex-shrink-0 overflow-hidden">
+                    {item.image ? (
+                      <img src={getImageUrl(item.image)} alt={item.name} className="w-full h-full object-cover"
+                        onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center"><Package className="h-8 w-8 text-gray-200" /></div>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex justify-between items-start gap-2">
+                      <div>
+                        <Link to={`/products/${item._id}`} className="text-sm font-semibold text-gray-900 hover:text-primary line-clamp-2 leading-snug">
+                          {item.name}
+                        </Link>
+                        <p className="text-xs text-gray-400 mt-1">SKU: {item.sku}</p>
+                        <p className="text-xs text-gray-400">Catégorie: {item.category?.name}</p>
                       </div>
-
-                      {/* Product Details */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex justify-between items-start">
-                          <div className="min-w-0 flex-1">
-                            <Link
-                              to={`/products/${item._id}`}
-                              className="text-lg font-medium text-[#3E2723] hover:text-[#FFC107] transition-colors block"
-                            >
-                              <span className="line-clamp-2 leading-tight">
-                                {item.name}
-                              </span>
-                            </Link>
-                            <p className="text-sm text-[#5A3F31]/80 mt-1 truncate">
-                              Catégorie: {item.category?.name}
-                            </p>
-                            <p className="text-sm text-[#5A3F31]/80 truncate">
-                              SKU: {item.sku}
-                            </p>
-                          </div>
-
-                          <button
-                            onClick={() => handleRemoveItem(item._id)}
-                            className="text-[#FFC107] hover:text-[#3E2723] p-1 flex-shrink-0 ml-2"
-                          >
-                            <Trash2 className="h-5 w-5" />
-                          </button>
-                        </div>
-
-                        {/* Quantity and Price */}
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between mt-4 gap-3">
-                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-                            <div className="flex items-center border border-[#FFD54F]/20 rounded-lg">
-                              <button
-                                onClick={() => handleQuantityChange(item._id, item.quantity - 1)}
-                                className="p-2 hover:bg-[#FFF3E0]"
-                              >
-                                <Minus className="h-4 w-4" />
-                              </button>
-                              <span className="px-4 py-2 text-center min-w-[3rem] text-[#3E2723]">
-                                {item.quantity}
-                              </span>
-                              <button
-                                onClick={() => handleQuantityChange(item._id, item.quantity + 1)}
-                                disabled={item.quantity >= item.stock.available}
-                                className="p-2 hover:bg-[#FFF3E0] disabled:opacity-50 disabled:cursor-not-allowed"
-                              >
-                                <Plus className="h-4 w-4" />
-                              </button>
-                            </div>
-
-                            <span className="text-sm text-[#5A3F31]/80">
-                              Stock: {item.stock.available}
-                            </span>
-                          </div>
-
-                          <div className="text-right sm:text-right">
-                            <div className="text-lg font-semibold text-[#FFC107]">
-                              ${(item.price * item.quantity).toFixed(2)}
-                            </div>
-                            <div className="text-sm text-[#5A3F31]/70">
-                              ${item.price.toFixed(2)} chacun
-                            </div>
-                          </div>
-                        </div>
+                      <button onClick={() => removeFromCart(item._id)} className="p-1.5 text-gray-300 hover:text-red-500 transition-colors shrink-0">
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                    <div className="flex items-center justify-between mt-4">
+                      <div className="flex items-center border border-gray-200 rounded-lg">
+                        <button onClick={() => updateQuantity(item._id, item.quantity - 1)}
+                          className="p-1.5 hover:bg-gray-50 transition rounded-l-lg">
+                          <Minus className="h-3.5 w-3.5 text-gray-500" />
+                        </button>
+                        <span className="px-4 py-1.5 text-sm font-semibold min-w-[2.5rem] text-center text-gray-900">{item.quantity}</span>
+                        <button onClick={() => updateQuantity(item._id, item.quantity + 1)}
+                          disabled={item.quantity >= item.stock.available}
+                          className="p-1.5 hover:bg-gray-50 disabled:opacity-30 transition rounded-r-lg">
+                          <Plus className="h-3.5 w-3.5 text-gray-500" />
+                        </button>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-base font-bold text-gray-900">{formatMAD(item.price * item.quantity)}</p>
+                        <p className="text-[11px] text-gray-400">{formatMAD(item.price)} / unité</p>
                       </div>
                     </div>
                   </div>
-                ))}
+                </div>
               </div>
-            </div>
+            ))}
           </div>
 
-          {/* Order Summary */}
+          {/* Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl shadow-sm border border-[#FFD54F]/20 p-6 sticky top-6">
-              <h2 className="text-lg font-semibold text-[#3E2723] mb-6">Résumé de la commande</h2>
+            <div className="bg-white rounded-xl border border-gray-200 p-6 sticky top-20">
+              <h2 className="text-lg font-bold text-gray-900 mb-6">Résumé</h2>
 
-              <div className="space-y-4">
-                <div className="rounded-lg border border-[#FFD54F]/30 bg-[#FFF8D9] p-4">
-                  <p className="text-sm font-medium text-[#3E2723]">
-                    Mode de paiement: <span className="text-[#FFC107]">{PAYMENT_METHOD}</span>
-                  </p>
-                  <p className="mt-2 text-sm text-[#5A3F31]">
-                    WhatsApp commande:{' '}
-                    <a
-                      href={WHATSAPP_LINK}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="font-medium text-[#FFC107] hover:text-[#3E2723]"
-                    >
-                      {WHATSAPP_NUMBER}
-                    </a>
-                  </p>
+              <div className="space-y-3">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Sous-total ({totalItems} articles)</span>
+                  <span className="font-semibold text-gray-900">{formatMAD(totalPrice)}</span>
                 </div>
-
-                <div className="flex justify-between">
-                  <span className="text-[#5A3F31]/80">Articles ({totalItems})</span>
-                  <span className="font-medium text-[#3E2723]">${totalPrice.toFixed(2)}</span>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Livraison</span>
+                  <span className="font-semibold text-accent">Gratuite</span>
                 </div>
-
-                <div className="flex justify-between">
-                  <span className="text-[#5A3F31]/80">Livraison</span>
-                  <span className="font-medium text-[#3E2723]">Gratuite</span>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Taxe (10%)</span>
+                  <span className="font-semibold text-gray-900">{formatMAD(totalPrice * 0.1)}</span>
                 </div>
-
-                <div className="flex justify-between">
-                  <span className="text-[#5A3F31]/80">Taxe</span>
-                  <span className="font-medium text-[#3E2723]">${(totalPrice * 0.1).toFixed(2)}</span>
-                </div>
-
-                <div className="border-t border-[#FFD54F]/20 pt-4">
-                  <div className="flex justify-between text-lg font-semibold text-[#3E2723]">
-                    <span>Total</span>
-                    <span>${(totalPrice * 1.1).toFixed(2)}</span>
+                <div className="border-t border-gray-100 pt-3 mt-3">
+                  <div className="flex justify-between">
+                    <span className="text-base font-bold text-gray-900">Total</span>
+                    <span className="text-xl font-bold text-gray-900">{formatMAD(totalPrice * 1.1)}</span>
                   </div>
                 </div>
               </div>
 
-              <button
-                onClick={handleCheckout}
-                className="w-full mt-6 bg-[#FFD54F] hover:bg-[#FFC107] text-[#3E2723] py-3 px-4 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors"
-              >
-                <CreditCard className="h-5 w-5" />
-                Procéder au paiement
+              <div className="mt-4 bg-primary/5 rounded-xl p-3.5 text-sm">
+                <p className="font-medium text-gray-900">Mode de paiement</p>
+                <p className="text-gray-500 text-xs mt-0.5">{PAYMENT_METHOD}</p>
+                <p className="text-gray-400 text-xs mt-1">
+                  WhatsApp:{' '}
+                  <a href={WHATSAPP_LINK} target="_blank" rel="noreferrer" className="text-primary hover:underline">{WHATSAPP_NUMBER}</a>
+                </p>
+              </div>
+
+              <button onClick={handleCheckout} className="w-full mt-5 btn-primary py-3.5 text-base">
+                <CreditCard className="h-5 w-5" /> Commander via WhatsApp
               </button>
 
-              <p className="text-xs text-[#5A3F31]/60 text-center mt-4">
-                Paiement sécurisé par chiffrement standard de l'industrie
-              </p>
+              <div className="mt-4 space-y-2">
+                {[
+                  { icon: Truck, text: 'Livraison gratuite' },
+                  { icon: Shield, text: 'Paiement sécurisé' },
+                  { icon: BadgeCheck, text: 'Qualité garantie' },
+                ].map((f, i) => (
+                  <div key={i} className="flex items-center gap-2 text-xs text-gray-400">
+                    <f.icon className="h-3.5 w-3.5 text-accent" />
+                    {f.text}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>

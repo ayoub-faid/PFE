@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Package, Filter, Search } from 'lucide-react';
+import { Package, Search, SlidersHorizontal, X, LayoutGrid, List, Loader2 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import productService from '../services/productService';
 import categoryService from '../services/categoryService';
@@ -13,13 +13,12 @@ export default function Products() {
   const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFilters, setShowFilters] = useState(true);
+  const [viewMode, setViewMode] = useState('grid');
   const { addToCart, getCartItemCount } = useCart();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  useEffect(() => { fetchData(); }, []);
 
   useEffect(() => {
     const categoryParam = searchParams.get('category');
@@ -34,14 +33,13 @@ export default function Products() {
       setLoading(true);
       setError(null);
       const [productsRes, categoriesRes] = await Promise.all([
-        productService.getAllProducts(null, true), // Only active products
-        categoryService.getAllCategories(true) // Only active categories
+        productService.getAllProducts(null, true),
+        categoryService.getAllCategories(true)
       ]);
       setProducts(productsRes.data.data || []);
       setCategories(categoriesRes.data.data || []);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to load products');
-      console.error('Error:', err);
     } finally {
       setLoading(false);
     }
@@ -58,16 +56,14 @@ export default function Products() {
     return matchesCategory && matchesSearch;
   });
 
-  const handleAddToCart = (product) => {
-    addToCart(product, 1);
-  };
+  const handleAddToCart = (product) => addToCart(product, 1);
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+      <div className="min-h-[70vh] flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto"></div>
-          <p className="mt-4 text-gray-300">Loading products...</p>
+          <Loader2 className="h-8 w-8 text-primary animate-spin mx-auto mb-3" />
+          <p className="text-gray-400 text-sm">Chargement des produits...</p>
         </div>
       </div>
     );
@@ -75,94 +71,102 @@ export default function Products() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+      <div className="min-h-[60vh] flex items-center justify-center">
         <div className="text-center">
-          <Package className="h-16 w-16 text-red-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-white mb-2">Error Loading Products</h2>
-          <p className="text-gray-300 mb-4">{error}</p>
-          <button
-            onClick={fetchData}
-            className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg"
-          >
-            Try Again
-          </button>
+          <Package className="h-16 w-16 text-gray-200 mx-auto mb-4" />
+          <h2 className="text-xl font-bold text-gray-900 mb-2">Erreur</h2>
+          <p className="text-gray-400 mb-6">{error}</p>
+          <button onClick={fetchData} className="btn-primary">Réessayer</button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-900">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-gray-800 shadow-sm border-b border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-white">Our Products</h1>
-              <p className="text-gray-300 mt-1">Discover our wide range of quality products</p>
+              <h1 className="text-2xl font-bold text-gray-900">Nos Produits</h1>
+              <p className="text-sm text-gray-400 mt-0.5">
+                {filteredProducts.length} produit{filteredProducts.length !== 1 ? 's' : ''} trouvé{filteredProducts.length !== 1 ? 's' : ''}
+              </p>
             </div>
-
-            {/* Search and Filters */}
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <div className="flex items-center gap-2">
+              <div className="relative flex-1 sm:w-72">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-300" />
                 <input
                   type="text"
-                  placeholder="Search products..."
+                  placeholder="Rechercher..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent w-full sm:w-64 bg-gray-800 text-white placeholder-gray-400"
+                  className="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 />
               </div>
-
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center gap-2 px-4 py-2 border border-gray-600 rounded-lg hover:bg-gray-700 text-gray-300 hover:text-white"
+                className={`p-2 rounded-xl border transition-colors ${
+                  showFilters ? 'border-primary bg-primary/5 text-primary' : 'border-gray-200 text-gray-400 hover:bg-gray-50'
+                }`}
               >
-                <Filter className="h-5 w-5" />
-                Filters
+                <SlidersHorizontal className="h-4 w-4" />
               </button>
+              <button
+                onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
+                className="p-2 rounded-xl border border-gray-200 text-gray-400 hover:bg-gray-50 transition-colors hidden sm:block"
+              >
+                {viewMode === 'grid' ? <List className="h-4 w-4" /> : <LayoutGrid className="h-4 w-4" />}
+              </button>
+            </div>
           </div>
 
-          {/* Category Filters */}
+          {/* Category pills */}
           {showFilters && (
-            <div className="mt-6 pt-6 border-t border-gray-700">
-              <div className="flex flex-wrap gap-2">
+            <div className="mt-4 pt-4 border-t border-gray-100">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Catégories</span>
+                {selectedCategory !== 'all' && (
+                  <button
+                    onClick={() => {
+                      setSelectedCategory('all');
+                      setSearchParams(prev => { const n = new URLSearchParams(prev); n.delete('category'); return n; });
+                    }}
+                    className="text-xs text-primary hover:text-primary-dark flex items-center gap-0.5"
+                  >
+                    <X className="h-3 w-3" /> Réinitialiser
+                  </button>
+                )}
+              </div>
+              <div className="flex flex-wrap gap-1.5">
                 <button
                   onClick={() => {
                     setSelectedCategory('all');
-                    setSearchParams((prev) => {
-                      const next = new URLSearchParams(prev);
-                      next.delete('category');
-                      return next;
-                    });
+                    setSearchParams(prev => { const n = new URLSearchParams(prev); n.delete('category'); return n; });
                   }}
-                  className={`px-4 py-2 rounded-full text-sm font-medium ${
+                  className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all ${
                     selectedCategory === 'all'
-                      ? 'bg-red-600 text-white'
-                      : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                      ? 'bg-primary text-white shadow-sm'
+                      : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
                   }`}
                 >
-                  All Categories
+                  Toutes
                 </button>
-                {categories.map(category => (
+                {categories.map(cat => (
                   <button
-                    key={category._id}
+                    key={cat._id}
                     onClick={() => {
-                      setSelectedCategory(category._id);
-                      setSearchParams((prev) => {
-                        const next = new URLSearchParams(prev);
-                        next.set('category', category._id);
-                        return next;
-                      });
+                      setSelectedCategory(cat._id);
+                      setSearchParams(prev => { const n = new URLSearchParams(prev); n.set('category', cat._id); return n; });
                     }}
-                    className={`px-4 py-2 rounded-full text-sm font-medium ${
-                      selectedCategory === category._id
-                        ? 'bg-red-600 text-white'
-                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all ${
+                      selectedCategory === cat._id
+                        ? 'bg-primary text-white shadow-sm'
+                        : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
                     }`}
                   >
-                    {category.name}
+                    {cat.name}
                   </button>
                 ))}
               </div>
@@ -170,41 +174,32 @@ export default function Products() {
           )}
         </div>
       </div>
-    </div>
 
-      {/* Products Grid */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Products */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {filteredProducts.length === 0 ? (
-          <div className="text-center py-12">
-            <Package className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-xl font-medium text-white mb-2">No products found</h3>
-            <p className="text-gray-300">
+          <div className="text-center py-20">
+            <div className="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-5">
+              <Search className="h-8 w-8 text-gray-300" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Aucun produit trouvé</h3>
+            <p className="text-sm text-gray-400">
               {searchTerm || selectedCategory !== 'all'
-                ? 'Try adjusting your search or filters'
-                : 'Products will be available soon'
-              }
+                ? 'Essayez d\'ajuster votre recherche ou vos filtres'
+                : 'Les produits seront bientôt disponibles'}
             </p>
           </div>
         ) : (
-          <>
-            <div className="mb-6">
-              <p className="text-gray-300">
-                Showing {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''}
-                {selectedCategory !== 'all' && ` in ${categories.find(c => c._id === selectedCategory)?.name}`}
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredProducts.map(product => (
-                <ProductCard 
-                  key={product._id}
-                  product={product}
-                  onAddToCart={handleAddToCart}
-                  cartItemCount={getCartItemCount(product._id)}
-                />
-              ))}
-            </div>
-          </>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
+            {filteredProducts.map(product => (
+              <ProductCard
+                key={product._id}
+                product={product}
+                onAddToCart={handleAddToCart}
+                cartItemCount={getCartItemCount(product._id)}
+              />
+            ))}
+          </div>
         )}
       </div>
     </div>
