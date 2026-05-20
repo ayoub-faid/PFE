@@ -27,12 +27,13 @@ const notifyInvalidToken = () => {
 };
 
 const authService = {
-  register: (name, email, password, role = 'client') => {
+  register: (name, email, password, role = 'client', phone = '') => {
     return axios.post(`${API_URL}/auth/register`, {
       name,
       email,
       password,
-      role
+      role,
+      phone
     });
   },
 

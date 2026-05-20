@@ -6,17 +6,17 @@ const signToken = (userId) => jwt.sign({ id: userId }, process.env.JWT_SECRET, {
 
 const register = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role, phone } = req.body;
     if (!name || !email || !password) return res.status(400).json({ message: 'Name, email and password are required' });
 
     const existing = await User.findOne({ email });
     if (existing) return res.status(409).json({ message: 'Email already in use' });
 
-    const user = await User.create({ name, email, password, role: role || 'client' });
+    const user = await User.create({ name, email, password, role: role || 'client', phone });
 
     return res.status(201).json({
       message: 'User created',
-      user: { id: user._id, name: user.name, email: user.email, role: user.role },
+      user: { id: user._id, name: user.name, email: user.email, role: user.role, phone: user.phone },
       token: signToken(user._id)
     });
   } catch (error) {
@@ -37,7 +37,7 @@ const login = async (req, res) => {
 
     return res.json({
       message: 'Login successful',
-      user: { id: user._id, name: user.name, email: user.email, role: user.role },
+      user: { id: user._id, name: user.name, email: user.email, role: user.role, phone: user.phone },
       token: signToken(user._id)
     });
   } catch (error) {

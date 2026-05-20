@@ -1,11 +1,11 @@
-import React from 'react';
-import { ShoppingCart, Plus, Minus, Trash2, ArrowLeft, CreditCard, Package, BadgeCheck, Truck, Shield, ChevronRight } from 'lucide-react';
+import React, { useState } from 'react';
+import { ShoppingCart, Plus, Minus, Trash2, ArrowLeft, CreditCard, Package, BadgeCheck, Truck, Shield, ChevronRight, CheckCircle, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
+import orderService from '../services/orderService';
 
 const PAYMENT_METHOD = 'Paiement à la livraison';
-const WHATSAPP_NUMBER = '+212696630684';
-const WHATSAPP_LINK = 'https://wa.me/212696630684';
 
 const getImageUrl = (image) => {
   if (!image) return null;
@@ -19,8 +19,46 @@ const formatMAD = (v) => Number(v).toLocaleString('fr-FR', { minimumFractionDigi
 
 export default function Cart() {
   const { cartItems, totalItems, totalPrice, updateQuantity, removeFromCart, clearCart } = useCart();
+  const { user } = useAuth();
+  const [submitting, setSubmitting] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
+    if (!user) {
+      setError('Vous devez être connecté pour passer une commande.');
+      return;
+    }
+    setSubmitting(true);
+    setError('');
+    try {
+      const items = cartItems.map(item => ({
+        product: item._id,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        image: item.image || ''
+      }));
+
+      const response = await orderService.createOrder({
+        items,
+        total: totalPrice * 1.1,
+        paymentMethod: PAYMENT_METHOD
+      });
+
+      if (response.data?.order) {
+        setSuccess(true);
+        clearCart();
+      }
+    } catch (err) {
+      const msg = err.response?.data?.message || 'Erreur lors de la commande. Veuillez réessayer.';
+      setError(msg);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const getWhatsAppLink = () => {
     const lines = cartItems.map((item, i) =>
       `${i + 1}. ${item.name} x${item.quantity} = ${(item.price * item.quantity).toFixed(2)} MAD`
     );
@@ -31,7 +69,7 @@ export default function Cart() {
       `Montant total: ${(totalPrice * 1.1).toFixed(2)} MAD`,
       `Mode de paiement: ${PAYMENT_METHOD}`
     ].join('\n');
-    window.open(`${WHATSAPP_LINK}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener,noreferrer');
+    return `https://wa.me/+212696630684?text=${encodeURIComponent(msg)}`;
   };
 
   if (cartItems.length === 0) {
@@ -152,15 +190,27 @@ export default function Cart() {
               <div className="mt-4 bg-primary/5 rounded-xl p-3.5 text-sm">
                 <p className="font-medium text-gray-900">Mode de paiement</p>
                 <p className="text-gray-500 text-xs mt-0.5">{PAYMENT_METHOD}</p>
-                <p className="text-gray-400 text-xs mt-1">
-                  WhatsApp:{' '}
-                  <a href={WHATSAPP_LINK} target="_blank" rel="noreferrer" className="text-primary hover:underline">{WHATSAPP_NUMBER}</a>
-                </p>
               </div>
 
-              <button onClick={handleCheckout} className="w-full mt-5 btn-primary py-3.5 text-base">
-                <CreditCard className="h-5 w-5" /> Commander via WhatsApp
+              {error && (
+                <div className="mt-4 bg-red-50 border border-red-100 rounded-xl px-4 py-3">
+                  <p className="text-sm text-red-600">{error}</p>
+                </div>
+              )}
+
+              <button onClick={handleCheckout} disabled={submitting}
+                className="w-full mt-4 btn-primary py-3.5 text-base">
+                {submitting ? (
+                  <><Loader2 className="h-5 w-5 animate-spin" /> Commande en cours...</>
+                ) : (
+                  <><CreditCard className="h-5 w-5" /> Passer la commande</>
+                )}
               </button>
+
+              <p className="text-center text-xs text-gray-400 mt-2">
+                Ou{' '}
+                <a href={getWhatsAppLink()} target="_blank" rel="noreferrer" className="text-primary hover:underline">contacter via WhatsApp</a>
+              </p>
 
               <div className="mt-4 space-y-2">
                 {[
@@ -178,6 +228,28 @@ export default function Cart() {
           </div>
         </div>
       </div>
+
+      {/* Success modal */}
+      {success && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md mx-4 text-center animate-fade-in">
+            <div className="w-16 h-16 bg-accent-50 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CheckCircle className="h-8 w-8 text-accent" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Commande envoyée !</h2>
+            <p className="text-gray-500 text-sm mb-1">Votre commande a été transmise à l'équipe Gros Products.</p>
+            <p className="text-gray-400 text-xs mb-6">Vous serez contacté par WhatsApp pour la confirmation.</p>
+            <div className="flex gap-3 justify-center">
+              <Link to="/dashboard" className="btn-primary px-6">
+                Voir mes commandes
+              </Link>
+              <Link to="/products" className="btn-secondary px-6">
+                Continuer mes achats
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

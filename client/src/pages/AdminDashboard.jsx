@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import userService from '../services/userService';
-import { Users, BarChart3, FolderOpen, Package } from 'lucide-react';
+import { Users, BarChart3, FolderOpen, Package, ShoppingCart } from 'lucide-react';
 import UserManagement from '../components/UserManagement';
 import CategoryManagement from '../components/CategoryManagement';
 import ProductManagement from '../components/ProductManagement';
 import StockReport from '../components/StockReport';
+import OrdersManagement from '../components/OrdersManagement';
 
 export default function AdminDashboard() {
   const { user } = useAuth();
@@ -33,6 +34,7 @@ export default function AdminDashboard() {
     { id: 'categories', label: 'Catégories', icon: FolderOpen },
     { id: 'products', label: 'Produits', icon: Package },
     { id: 'stock', label: 'Rapport stock', icon: BarChart3 },
+    { id: 'orders', label: 'Commandes', icon: ShoppingCart },
   ];
 
   return (
@@ -66,6 +68,7 @@ export default function AdminDashboard() {
           {activeTab === 'categories' && <CategoryManagement />}
           {activeTab === 'products' && <ProductManagement />}
           {activeTab === 'stock' && <StockReport />}
+          {activeTab === 'orders' && <OrdersManagement />}
         </div>
       </main>
     </div>

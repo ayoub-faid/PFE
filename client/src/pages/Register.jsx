@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { UserPlus, Mail, Lock, User, Loader2, Eye, EyeOff } from 'lucide-react';
+import { UserPlus, Mail, Lock, User, Phone, Loader2, Eye, EyeOff } from 'lucide-react';
 
 export default function Register() {
   const [formData, setFormData] = useState({
-    name: '', email: '', password: '', confirmPassword: '', role: 'client'
+    name: '', email: '', password: '', confirmPassword: '', role: 'client', phone: ''
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -22,7 +22,7 @@ export default function Register() {
     if (formData.password.length < 6) { setError('Le mot de passe doit contenir au moins 6 caractères'); return; }
     setLoading(true);
     try {
-      await register(formData.name, formData.email, formData.password, formData.role);
+      await register(formData.name, formData.email, formData.password, formData.role, formData.phone);
       navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || "Échec de l'inscription.");
@@ -58,6 +58,7 @@ export default function Register() {
             {[
               { id: 'name', label: 'Nom complet', icon: User, type: 'text', placeholder: 'Votre nom complet' },
               { id: 'email', label: 'Adresse email', icon: Mail, type: 'email', placeholder: 'votre@email.com' },
+              { id: 'phone', label: 'WhatsApp', icon: Phone, type: 'tel', placeholder: '06 XX XX XX XX' },
             ].map(f => (
               <div key={f.id}>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">{f.label}</label>

@@ -45,10 +45,10 @@ export const AuthProvider = ({ children }) => {
     };
   }, []);
 
-  const register = async (name, email, password, role = 'client') => {
+  const register = async (name, email, password, role = 'client', phone = '') => {
     try {
       setError(null);
-      const response = await authService.register(name, email, password, role);
+      const response = await authService.register(name, email, password, role, phone);
       const { user, token } = response.data;
       authService.saveUserData(user, token);
       setUser(user);
